@@ -48,9 +48,9 @@ public class LoginUI extends UI {
         final TextField username = new TextField("Usuario");
         final TextField password = new TextField("Contraseña");
 
-        List<TextField> componentesLogin = new ArrayList<TextField>();
-        componentesLogin.add(username);
-        componentesLogin.add(password);
+        List<TextField> camposLogin = new ArrayList<TextField>();
+        camposLogin.add(username);
+        camposLogin.add(password);
 
         // Layout simulando un div inline
         final HorizontalLayout divButtons = new HorizontalLayout();
@@ -67,7 +67,7 @@ public class LoginUI extends UI {
 
         //
         btnLogin.addClickListener(e -> {
-            if (camposValidos(componentesLogin)) {
+            if (camposValidos(camposLogin)) {
 
                 MongoClient mongoClient;
                 try {
@@ -107,6 +107,13 @@ public class LoginUI extends UI {
     public static class LoginUIServlet extends VaadinServlet {
     }
 
+    /**
+     * Método encargado de comprobar si existe el usuario en base de datos
+     * @param username nombre de usuario
+     * @param password contraseña
+     * @param db base de datos
+     * @return TRUE/FALSE
+     */
     public static boolean existeUsuario(TextField username, TextField password,
             DB db) {
         boolean existe = false;
@@ -134,16 +141,21 @@ public class LoginUI extends UI {
 
     }
 
-    public static boolean camposValidos(List<TextField> listaComponentes) {
+    /**
+     * Método encargado de comprobar que los campos sean válidos
+     * @param camposLogin listado de campos del formulario de login
+     * @return TRUE/FALSE
+     */
+    public static boolean camposValidos(List<TextField> camposLogin) {
         boolean esCorrecto = true;
 
         List<String> errores = new ArrayList<>();
 
-        if (listaComponentes.get(0).getValue() == "") {
+        if (camposLogin.get(0).getValue() == "") {
             esCorrecto = false;
             errores.add("El campo 'Usuario' es obligatorio.");
         }
-        if (listaComponentes.get(1).getValue() == "") {
+        if (camposLogin.get(1).getValue() == "") {
             esCorrecto = false;
             errores.add("El campo 'Contraseña' es obligatorio.");
         }

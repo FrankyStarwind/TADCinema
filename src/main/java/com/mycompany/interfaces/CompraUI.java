@@ -1,30 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.mycompany.interfaces;
 
+import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WrappedSession;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import javax.servlet.annotation.WebServlet;
 
-/**
- *
- * @author frank
- */
+@Theme("mytheme")
 public class CompraUI extends UI {
 
     public static WrappedSession session = null; //Definimos el elemento de sesión
@@ -65,15 +55,15 @@ public class CompraUI extends UI {
         setContent(layout);
     }
 
-    @WebServlet(urlPatterns = "/Cartelera/*", name = "CarteleraServlet", asyncSupported = true)
+    @WebServlet(urlPatterns = "/compra/*", name = "CompraUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = CompraUI.class, productionMode = false)
-    public static class MyUIServlet extends VaadinServlet {
+    public static class CompraUIServlet extends VaadinServlet {
     }
     public void definirCabeceraTabla(Table table) {
-        table.addContainerProperty("Pelicula", String.class, null);
-        table.addContainerProperty("Sesion 1", String.class, null);
-        table.addContainerProperty("Sesion 2", String.class, null);
-        table.addContainerProperty("Sesion 3", String.class, null);
+        table.addContainerProperty("Película", String.class, null);
+        table.addContainerProperty("Sesión 1", String.class, null);
+        table.addContainerProperty("Sesión 2", String.class, null);
+        table.addContainerProperty("Sesión 3", String.class, null);
         
         table.setSelectable(true); //Para poder seleccionar los registros
         table.setSizeFull();

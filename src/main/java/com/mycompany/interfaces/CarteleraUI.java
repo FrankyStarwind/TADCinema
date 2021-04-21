@@ -1,30 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mycompany.interfaces;
 
+import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WrappedSession;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import javax.servlet.annotation.WebServlet;
 
-/**
- *
- * @author frank
- */
+@Theme("mytheme")
 public class CarteleraUI extends UI {
 
     public static WrappedSession session = null; //Definimos el elemento de sesión
@@ -65,9 +54,9 @@ public class CarteleraUI extends UI {
         setContent(layout);
     }
 
-    @WebServlet(urlPatterns = "/Cartelera/*", name = "CarteleraServlet", asyncSupported = true)
+    @WebServlet(urlPatterns = "/cartelera/*", name = "CarteleraUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = CarteleraUI.class, productionMode = false)
-    public static class MyUIServlet extends VaadinServlet {
+    public static class CarteleraUIServlet extends VaadinServlet {
     }
     public void definirCabeceraTabla(Table table) {
         table.addContainerProperty("Pelicula", String.class, null);

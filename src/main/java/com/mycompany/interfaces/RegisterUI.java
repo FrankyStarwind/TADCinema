@@ -35,17 +35,28 @@ public class RegisterUI extends UI {
                 + " registrarte debes de rellenar todos los campos del formulario");
         final FormLayout form = new FormLayout();
 
+        // lista para almacenar los campos
+        List<TextField> campos = new ArrayList<>();
+
         // Campos requeridos del formulario
-        final TextField username = new TextField("username");
-        username.setRequired(true);
         final TextField name = new TextField("Nombre");
         name.setRequired(true);
+        campos.add(name);
         final TextField surname = new TextField("Apellidos");
         surname.setRequired(true);
+        campos.add(surname);
         final TextField dni = new TextField("Dni");
         dni.setRequired(true);
+        campos.add(dni);
+        final TextField telefono = new TextField("Teléfono");
+        telefono.setRequired(false);
+        campos.add(telefono);
+        final TextField username = new TextField("Usuario");
+        username.setRequired(true);
+        campos.add(username);
         final TextField password = new TextField("Contraseña");
         password.setRequired(true);
+        campos.add(password);
 
         // Layout simulando un div inline
         final HorizontalLayout divButtons = new HorizontalLayout();
@@ -76,13 +87,14 @@ public class RegisterUI extends UI {
                     System.out.println("Conectado a la base de datos");
 
                     // si no existe, se crea
-                    if (!existeUsuario(dni, db)) {
+                    if (!existeUsuario("_id", dni, db) && !existeUsuario("username", username, db)) {
                         // creación del documento usuario
                         BasicDBObject usuario = new BasicDBObject();
-                        usuario.append("username", username.getValue());
                         usuario.append("nombre", name.getValue());
                         usuario.append("apellidos", surname.getValue());
                         usuario.append("_id", dni.getValue());
+                        usuario.append("telefono", telefono.getValue());
+                        usuario.append("username", username.getValue());
                         usuario.append("contraseña", password.getValue());
 
                         // Obtengo la colección de los usuarios
@@ -90,11 +102,15 @@ public class RegisterUI extends UI {
                         usuarios.insert(usuario);
 
                         // resetea valores
-                        resetearCampos(name, surname, dni, password);
+                        resetearCampos(campos);
 
                         // mensaje de éxito
                         verticalLayout.addComponent(new Label("<p style=\"color: green; "
                                 + "font-weight: bold;\">Registro de usuario realizado correctamente.</p>", ContentMode.HTML));
+                    } else if (existeUsuario("_id", dni, db)) {
+                        // mensaje de error
+                        verticalLayout.addComponent(new Label("<p style=\"color: red; "
+                                + "font-weight: bold;\">El dni ya existe en base de datos.</p>", ContentMode.HTML));
                     } else {
                         // mensaje de error
                         verticalLayout.addComponent(new Label("<p style=\"color: red; "
@@ -107,7 +123,7 @@ public class RegisterUI extends UI {
         });
 
         // Se añaden los componentes al formulario
-        form.addComponents(username,password,name, surname, dni,  divButtons);
+        form.addComponents(name, surname, dni, telefono, username, password, divButtons);
 
         verticalLayout.addComponents(labelInfo, form);
         verticalLayout.setMargin(true);
@@ -168,26 +184,23 @@ public class RegisterUI extends UI {
      * Método encargado de resetear los valores de los campos del formulario de
      * registro
      *
-     * @param name nombre
-     * @param surname apellidos
-     * @param dni dni
-     * @param password contraseña
+     * @param campos listado de campos
      */
-    public static void resetearCampos(TextField name, TextField surname, TextField dni, TextField password) {
-        name.setValue("");
-        surname.setValue("");
-        dni.setValue("");
-        password.setValue("");
+    public static void resetearCampos(List<TextField> campos) {
+        for (TextField campo : campos) {
+            campo.setValue("");
+        }
     }
 
     /**
      * Método encargado de comprobar si existe el usuario en base de datos
      *
-     * @param dni dni del usuario introducido en el formulario
+     * @param nombreCampo tipo de campo
+     * @param campo campo introducido en el formulario
      * @param db base de datos
      * @return TRUE/FALSE
      */
-    public static boolean existeUsuario(TextField dni, DB db) {
+    public static boolean existeUsuario(String nombreCampo, TextField campo, DB db) {
         boolean existe = false;
 
         // obtengo la colección de los usuarios
@@ -197,13 +210,30 @@ public class RegisterUI extends UI {
         final DBCursor cursor = equipos.find();
 
         DBObject usuario;
-        // recorre la lista y si lo encuentra, sale del bucle
-        while (cursor.hasNext()) {
-            usuario = cursor.next();
-            if (usuario.get("_id").equals(dni.getValue())) {
-                existe = true;
+
+        switch (nombreCampo) {
+            case "_id":
+                // recorre la lista y si lo encuentra, sale del bucle
+                while (cursor.hasNext()) {
+                    usuario = cursor.next();
+                    if (usuario.get("_id").equals(campo.getValue())) {
+                        existe = true;
+                        break;
+                    }
+                }
                 break;
-            }
+            case "username":
+                // recorre la lista y si lo encuentra, sale del bucle
+                while (cursor.hasNext()) {
+                    usuario = cursor.next();
+                    if (usuario.get("username").equals(campo.getValue())) {
+                        existe = true;
+                        break;
+                    }
+                }
+                break;
+            default:
+                break;
         }
 
         return existe;
