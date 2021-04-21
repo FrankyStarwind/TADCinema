@@ -36,6 +36,8 @@ public class RegisterUI extends UI {
         final FormLayout form = new FormLayout();
 
         // Campos requeridos del formulario
+        final TextField username = new TextField("username");
+        username.setRequired(true);
         final TextField name = new TextField("Nombre");
         name.setRequired(true);
         final TextField surname = new TextField("Apellidos");
@@ -77,6 +79,7 @@ public class RegisterUI extends UI {
                     if (!existeUsuario(dni, db)) {
                         // creación del documento usuario
                         BasicDBObject usuario = new BasicDBObject();
+                        usuario.append("username", username.getValue());
                         usuario.append("nombre", name.getValue());
                         usuario.append("apellidos", surname.getValue());
                         usuario.append("_id", dni.getValue());
@@ -104,7 +107,7 @@ public class RegisterUI extends UI {
         });
 
         // Se añaden los componentes al formulario
-        form.addComponents(name, surname, dni, password, divButtons);
+        form.addComponents(username,password,name, surname, dni,  divButtons);
 
         verticalLayout.addComponents(labelInfo, form);
         verticalLayout.setMargin(true);
