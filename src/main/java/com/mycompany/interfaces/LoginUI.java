@@ -1,5 +1,6 @@
 package com.mycompany.interfaces;
 
+import com.vaadin.annotations.StyleSheet;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
@@ -7,37 +8,41 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-/**
- * This UI is the application entry point. A UI may either represent a browser window 
- * (or tab) or some part of a html page where a Vaadin application is embedded.
- * <p>
- * The UI is initialized using {@link #init(VaadinRequest)}. This method is intended to be 
- * overridden to add component to the user interface and initialize non-component functionality.
- */
 @Theme("mytheme")
 public class LoginUI extends UI {
     
+    // Nombre de clase de la interfaz completa
     public static final String CLASSNAME = "login";
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        final VerticalLayout layout = new VerticalLayout();
+        // Layout general con css
+        final CssLayout layout = new CssLayout();
+        layout.setStyleName(CLASSNAME);
+        
+        // Layouts vertical y formulario
+        final VerticalLayout verticalLayout = new VerticalLayout();
         final FormLayout form = new FormLayout();
         
         final TextField username = new TextField("Usuario");
         final TextField password = new TextField("Contraseña");
         final Button btnLogin = new Button("Iniciar sesión");
+        btnLogin.setStyleName("primary");
         final Button btnRegister = new Button("Regístrate");
         form.addComponents(username, password, btnLogin);
+        form.setStyleName(CLASSNAME + "-form");
         
-        layout.addComponents(form, btnRegister);
-        layout.setMargin(true);
-        layout.setSpacing(true);
+        verticalLayout.addComponents(form, btnRegister);
+        verticalLayout.setMargin(true);
+        verticalLayout.setSpacing(true);
+        
+        layout.addComponent(verticalLayout);
         
         setContent(layout);
     }
