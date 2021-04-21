@@ -5,6 +5,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.vaadin.annotations.PreserveOnRefresh;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
@@ -12,6 +13,7 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.WrappedSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
@@ -29,6 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Theme("mytheme")
+@PreserveOnRefresh
 public class LoginUI extends UI {
 
     // Nombre de clase de la interfaz completa
@@ -36,6 +39,9 @@ public class LoginUI extends UI {
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
+        // obtengo la sesion
+        final WrappedSession session = getSession().getSession();
+        
         // Layout general con css
         final CssLayout layout = new CssLayout();
         layout.setStyleName(CLASSNAME);
@@ -76,6 +82,7 @@ public class LoginUI extends UI {
                     mongoClient = new MongoClient("localhost", 27017);
                     DB db = mongoClient.getDB("TADCinemaDB");
                     if (existeUsuario(username, password, db)) {
+                        session.setAttribute("usuario", username.getValue());
                         Page.getCurrent().setLocation("/cartelera");
                     }
                 } catch (UnknownHostException ex) {
