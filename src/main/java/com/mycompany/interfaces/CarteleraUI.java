@@ -78,6 +78,7 @@ public class CarteleraUI extends UI {
 
     public void definirCabeceraTabla(Table table) {
         table.addContainerProperty("Pelicula", String.class, null);
+        table.addContainerProperty("Sala", String.class, null);
         table.addContainerProperty("Sesion 1", String.class, null);
         table.addContainerProperty("Sesion 2", String.class, null);
         table.addContainerProperty("Sesion 3", String.class, null);
