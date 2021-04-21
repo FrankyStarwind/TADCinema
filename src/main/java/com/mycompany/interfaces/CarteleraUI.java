@@ -55,7 +55,7 @@ public class CarteleraUI extends UI {
             @Override
             public void itemClick(ItemClickEvent event) {
                 session = getSession().getSession();
-                String nomPeli = event.getItem().getItemProperty("Pelicula").getValue().toString();
+                String nomPeli=event.getItem().getItemProperty("Película").getValue().toString();
                 session.setAttribute("sessionNombrePelicula", nomPeli);
                 Notification.show("Entrando en las sesiones de " + nomPeli, "Entrando, espere por favor",
                         Notification.Type.HUMANIZED_MESSAGE);
@@ -78,11 +78,10 @@ public class CarteleraUI extends UI {
 
     public void definirCabeceraTabla(Table table) {
         table.addContainerProperty("Pelicula", String.class, null);
-        table.addContainerProperty("Sala", String.class, null);
         table.addContainerProperty("Sesion 1", String.class, null);
         table.addContainerProperty("Sesion 2", String.class, null);
         table.addContainerProperty("Sesion 3", String.class, null);
-
+        
         table.setSelectable(true); //Para poder seleccionar los registros
         table.setSizeFull();
     }

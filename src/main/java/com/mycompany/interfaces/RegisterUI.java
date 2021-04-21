@@ -17,6 +17,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -29,10 +30,11 @@ public class RegisterUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-        // Creación de layouts e información a modo de label
+        // Creación de layouts, panel e información a modo de label
         final VerticalLayout verticalLayout = new VerticalLayout();
         final Label labelInfo = new Label("Bienvenido a TAD Cinema, para poder"
                 + " registrarte debes de rellenar todos los campos del formulario");
+        final Panel registerPanel = new Panel("Formulario de registro");
         final FormLayout form = new FormLayout();
 
         // lista para almacenar los campos
@@ -124,8 +126,13 @@ public class RegisterUI extends UI {
 
         // Se añaden los componentes al formulario
         form.addComponents(name, surname, dni, telefono, username, password, divButtons);
+        form.setMargin(true);
+        form.setSpacing(true);
+        
+        registerPanel.setContent(form);
+        registerPanel.setWidth("420px");
 
-        verticalLayout.addComponents(labelInfo, form);
+        verticalLayout.addComponents(labelInfo, registerPanel);
         verticalLayout.setMargin(true);
         verticalLayout.setSpacing(true);
 

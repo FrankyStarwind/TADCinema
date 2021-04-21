@@ -18,6 +18,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -39,9 +40,10 @@ public class LoginUI extends UI {
         final CssLayout layout = new CssLayout();
         layout.setStyleName(CLASSNAME);
 
-        // Layouts vertical y formulario y el label de información
+        // Layouts, panel y el label de información
         final VerticalLayout verticalLayout = new VerticalLayout();
         final Label labelInfo = new Label("Inicia sesión para entrar a las funcionalidades de la aplicación");
+        final Panel loginPanel = new Panel("Inicio de sesión");
         final FormLayout form = new FormLayout();
 
         // Campos usuario y contraseña
@@ -74,11 +76,8 @@ public class LoginUI extends UI {
                     mongoClient = new MongoClient("localhost", 27017);
                     DB db = mongoClient.getDB("TADCinemaDB");
                     if (existeUsuario(username, password, db)) {
-                        Page.getCurrent().setLocation("/Cartelera");
-                    } else {
-                        Notification.show("Usuario/contraseña no válidas", Notification.Type.ERROR_MESSAGE);
+                        Page.getCurrent().setLocation("/cartelera");
                     }
-
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(LoginUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -91,9 +90,14 @@ public class LoginUI extends UI {
 
         // Se añaden los componentes al formulario
         form.addComponents(username, password, divButtons);
+        form.setSpacing(true);
+        form.setMargin(true);
         form.setStyleName(CLASSNAME + "-form");
+        
+        loginPanel.setContent(form);
+        loginPanel.setWidth("440px");
 
-        verticalLayout.addComponents(labelInfo, form);
+        verticalLayout.addComponents(labelInfo, loginPanel);
         verticalLayout.setMargin(true);
         verticalLayout.setSpacing(true);
 
@@ -132,8 +136,11 @@ public class LoginUI extends UI {
                 if (usuario.get("contraseña").equals(password.getValue())) {
                     existe = true;
                     break;
+                } else {
+                    Notification.show("Error", "Contraseña no válida", Notification.Type.ERROR_MESSAGE);
                 }
-                
+            } else {
+                Notification.show("Error", "Usuario no válido", Notification.Type.ERROR_MESSAGE);
             }
         }
 
