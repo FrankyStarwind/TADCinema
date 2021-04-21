@@ -112,20 +112,21 @@ public class LoginUI extends UI {
         boolean existe = false;
 
         // obtengo la colección de los usuarios
-        DBCollection equipos = db.getCollection("usuarios");
+        DBCollection usuarios = db.getCollection("usuarios");
 
         // cursor para iterar la lista de usuarios
-        final DBCursor cursor = equipos.find();
+        final DBCursor cursor = usuarios.find();
 
         DBObject usuario;
         // recorre la lista y si lo encuentra, sale del bucle
         while (cursor.hasNext()) {
             usuario = cursor.next();
             if (usuario.get("username").equals(username.getValue())) {
-                if (usuario.get("password").equals(password.getValue())) {
+                if (usuario.get("contraseña").equals(password.getValue())) {
                     existe = true;
+                    break;
                 }
-                break;
+                
             }
         }
 
