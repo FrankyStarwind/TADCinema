@@ -77,11 +77,11 @@ public class CarteleraUI extends UI {
     }
 
     public void definirCabeceraTabla(Table table) {
-        table.addContainerProperty("Pelicula", String.class, null);
+        table.addContainerProperty("Película", String.class, null);
         table.addContainerProperty("Sala", String.class, null);
-        table.addContainerProperty("Sesion 1", String.class, null);
-        table.addContainerProperty("Sesion 2", String.class, null);
-        table.addContainerProperty("Sesion 3", String.class, null);
+        table.addContainerProperty("Sesión 1", String.class, null);
+        table.addContainerProperty("Sesión 2", String.class, null);
+        table.addContainerProperty("Sesión 3", String.class, null);
         
         table.setSelectable(true); //Para poder seleccionar los registros
         table.setSizeFull();

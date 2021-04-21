@@ -59,6 +59,9 @@ public class RegisterUI extends UI {
         final TextField password = new TextField("Contraseña");
         password.setRequired(true);
         campos.add(password);
+        
+        final Label infoOblig = new Label("<p><span style=\"color: #ed473b;\">*"
+                + "</span> Campo obligatorio</p>", ContentMode.HTML);
 
         // Layout simulando un div inline
         final HorizontalLayout divButtons = new HorizontalLayout();
@@ -125,7 +128,7 @@ public class RegisterUI extends UI {
         });
 
         // Se añaden los componentes al formulario
-        form.addComponents(name, surname, dni, telefono, username, password, divButtons);
+        form.addComponents(name, surname, dni, telefono, username, password, infoOblig, divButtons);
         form.setMargin(true);
         form.setSpacing(true);
         
