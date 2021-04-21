@@ -98,7 +98,7 @@ public class CarteleraUI extends UI {
         // recorre la lista y si lo encuentra, sale del bucle
         while (cursor.hasNext()) {
             pelicula = cursor.next();
-            tableP.addItem(new Object[]{pelicula.get("name"), pelicula.get("numSala"),"16:00", " 18:00", "20:00"}, cursor.size() + 1);
+            tableP.addItem(new Object[]{pelicula.get("name"), pelicula.get("numSala"),"16:00", " 18:00", "20:00"}, tableP.getItemIds().size() + 1);
 
         }
 
