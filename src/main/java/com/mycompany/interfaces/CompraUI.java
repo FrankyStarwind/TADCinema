@@ -7,7 +7,6 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WrappedSession;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
@@ -20,12 +19,8 @@ public class CompraUI extends UI {
     public static WrappedSession session = null; //Definimos el elemento de sesión
     @Override
     protected void init(VaadinRequest request) {
-        // Layout general con css
-        final VerticalLayout layout = new VerticalLayout();
-
         // Layouts vertical y formulario
-        final VerticalLayout verticalLayout = new VerticalLayout();
-        final FormLayout form = new FormLayout();
+        final VerticalLayout layout = new VerticalLayout();
 
         final Table tablePeliculas = new Table();
         definirCabeceraTabla(tablePeliculas);
@@ -39,18 +34,16 @@ public class CompraUI extends UI {
             @Override
             public void itemClick(ItemClickEvent event) {
                 session = getSession().getSession();
-                String nomPeli=event.getItem().getItemProperty("Pelicula").getValue().toString();
+                String nomPeli=event.getItem().getItemProperty("Película").getValue().toString();
                 session.setAttribute("sessionNombrePelicula", nomPeli);
                 Notification.show("Entrando en las sesiones de "+nomPeli, "Entrando, espere por favor",
                     Notification.Type.HUMANIZED_MESSAGE);
                 //Page.getCurrent().setLocation("/"+"session");
             }
         });
-        verticalLayout.addComponents(form,tablePeliculas);
-        verticalLayout.setMargin(true);
-        verticalLayout.setSpacing(true);
-
-        layout.addComponent(verticalLayout);
+        layout.addComponents(tablePeliculas);
+        layout.setMargin(true);
+        layout.setSpacing(true);
 
         setContent(layout);
     }

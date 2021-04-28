@@ -1,5 +1,6 @@
 package com.mycompany.interfaces;
 
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.event.ItemClickEvent;
@@ -19,18 +20,14 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 
 @Theme("mytheme")
+@PreserveOnRefresh
 public class SalaUI extends UI {
 
     public static WrappedSession session = null; //Definimos el elemento de sesión
 
     @Override
     protected void init(VaadinRequest request) {
-        // Layout general con css
         final VerticalLayout layout = new VerticalLayout();
-
-        // Layouts vertical y formulario
-        final VerticalLayout verticalLayout = new VerticalLayout();
-        final FormLayout form = new FormLayout();
 
         final Table tablePeliculas = new Table();
         definirCabeceraTabla(tablePeliculas);
@@ -61,22 +58,18 @@ public class SalaUI extends UI {
             }
             
         });
-        verticalLayout.addComponent(new Image("Imagen sala",
+        layout.addComponent(new Image("Imagen sala",
                 new ClassResource("sala.JPG")));
-        verticalLayout.addComponents(form
-        ,tablePeliculas
-        );
-        verticalLayout.setMargin(true);
-        verticalLayout.setSpacing(true);
-
-        layout.addComponent(verticalLayout);
+        layout.addComponents(tablePeliculas);
+        layout.setMargin(true);
+        layout.setSpacing(true);
 
         setContent(layout);
     }
 
     @WebServlet(urlPatterns = "/sala/*", name = "SalaUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = SalaUI.class, productionMode = false)
-    public static class CompraUIServlet extends VaadinServlet {
+    public static class SalaUIServlet extends VaadinServlet {
     }
 
     public void definirCabeceraTabla(Table table) {
