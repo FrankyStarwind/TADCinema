@@ -13,13 +13,11 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WrappedSession;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -44,6 +42,7 @@ public class CarteleraUI extends UI {
         session = getSession().getSession();
 
         if (session.getAttribute("usuario") == null) {
+            session.invalidate();
             Page.getCurrent().setLocation("/login");
         } else {
             nombreUsuario.setValue("Bienvenido, " + session.getAttribute("usuario"));
@@ -57,6 +56,8 @@ public class CarteleraUI extends UI {
         btnLogout.addClickListener(e -> {
             Page.getCurrent().setLocation("/");
         });
+        
+        final Panel userPanel = cargarMenu();
         
         // tabla con el registro de películas
         final Table tablePeliculas = new Table();
@@ -83,7 +84,7 @@ public class CarteleraUI extends UI {
             }
         });
         
-        verticalLayout.addComponents(nombreUsuario, btnLogout, tablePeliculas);
+        verticalLayout.addComponents(nombreUsuario, btnLogout, userPanel, tablePeliculas);
         verticalLayout.setMargin(true);
         verticalLayout.setSpacing(true);
 
@@ -121,5 +122,27 @@ public class CarteleraUI extends UI {
 
         }
 
+    }
+    
+    private static Panel cargarMenu() {
+        final Panel userPanel = new Panel();
+        final HorizontalLayout hLayout = new HorizontalLayout();
+        final Button btnInicio = new Button("Inicio");
+        final Button btnCartelera = new Button("Cartelera");
+        
+        btnInicio.addClickListener(e -> {
+            Page.getCurrent().setLocation("/home");
+        });
+        
+        btnCartelera.addClickListener(e -> {
+            Page.getCurrent().setLocation("/cartelera");
+        });
+        
+        hLayout.addComponents(btnInicio, btnCartelera);
+        hLayout.setMargin(true);
+        hLayout.setSpacing(true);
+        userPanel.setContent(hLayout);
+        
+        return userPanel;
     }
 }
