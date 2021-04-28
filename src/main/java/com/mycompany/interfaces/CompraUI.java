@@ -60,7 +60,7 @@ public class CompraUI extends UI {
     public static class CompraUIServlet extends VaadinServlet {
     }
     public void definirCabeceraTabla(Table table) {
-        table.addContainerProperty("Película", String.class, null);
+        table.addContainerProperty("Pelicula", String.class, null);
         table.addContainerProperty("Sesión 1", String.class, null);
         table.addContainerProperty("Sesión 2", String.class, null);
         table.addContainerProperty("Sesión 3", String.class, null);
