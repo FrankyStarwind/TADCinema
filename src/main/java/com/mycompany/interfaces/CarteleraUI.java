@@ -124,11 +124,16 @@ public class CarteleraUI extends UI {
 
     }
     
+    /**
+     * Método encargado de cargar el menú de navegación
+     * @return Panel
+     */
     private static Panel cargarMenu() {
         final Panel userPanel = new Panel();
         final HorizontalLayout hLayout = new HorizontalLayout();
         final Button btnInicio = new Button("Inicio");
         final Button btnCartelera = new Button("Cartelera");
+        final Button btnPerfil = new Button("Perfil");
         
         btnInicio.addClickListener(e -> {
             Page.getCurrent().setLocation("/home");
@@ -138,11 +143,16 @@ public class CarteleraUI extends UI {
             Page.getCurrent().setLocation("/cartelera");
         });
         
-        hLayout.addComponents(btnInicio, btnCartelera);
+        btnPerfil.addClickListener(e -> {
+            Page.getCurrent().setLocation("/perfil");
+        });
+        
+        hLayout.addComponents(btnInicio, btnCartelera, btnPerfil);
         hLayout.setMargin(true);
         hLayout.setSpacing(true);
         userPanel.setContent(hLayout);
         
         return userPanel;
     }
+    
 }

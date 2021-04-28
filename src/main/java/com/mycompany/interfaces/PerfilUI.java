@@ -8,17 +8,20 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WrappedSession;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import javax.servlet.annotation.WebServlet;
 
 @Theme("mytheme")
 @PreserveOnRefresh
-public class HomeUI extends UI {
-    
+public class PerfilUI extends UI {
+
     @Override
     protected void init(VaadinRequest request) {
         final WrappedSession session = getSession().getSession();
@@ -34,20 +37,33 @@ public class HomeUI extends UI {
         });
         
         final Panel userPanel = cargarMenu();
+        final Panel datosPanel = new Panel("Mis datos");
         
+        final FormLayout formDatos = new FormLayout();
+        final TextField nombre = new TextField("Nombre");
+        final TextField apellidos = new TextField("Apellidos");
+        final TextField dni = new TextField("Dni");
+        final TextField telefono = new TextField("Telefono");
+        final TextField username = new TextField("Usuario");
+        final PasswordField password = new PasswordField("Contraseña");
+        final PasswordField newPassword = new PasswordField("Nueva contraseña");
+        final Button btnGuardar = new Button("Guardar datos");
+        formDatos.addComponents(nombre, apellidos, dni, telefono, username, password, newPassword, btnGuardar);
+        formDatos.setMargin(true);
+        formDatos.setSpacing(true);
+        datosPanel.setContent(formDatos);
         
-        
-        rootLayout.addComponents(btnLogout, userPanel);
+        rootLayout.addComponents(btnLogout, userPanel, datosPanel);
         
         rootLayout.setMargin(true);
         rootLayout.setSpacing(true);
         
         setContent(rootLayout);
     }
- 
-    @WebServlet(urlPatterns = "/home/*", name = "HomeUIServlet", asyncSupported = true)
-    @VaadinServletConfiguration(ui = HomeUI.class, productionMode = false)
-    public static class HomeUIServlet extends VaadinServlet {
+    
+    @WebServlet(urlPatterns = "/perfil/*", name = "PerfilUIServlet", asyncSupported = true)
+    @VaadinServletConfiguration(ui = PerfilUI.class, productionMode = false)
+    public static class PerfilUIServlet extends VaadinServlet {
     }
     
     /**

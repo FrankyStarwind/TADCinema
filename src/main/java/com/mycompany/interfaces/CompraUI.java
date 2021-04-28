@@ -4,10 +4,14 @@ package com.mycompany.interfaces;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WrappedSession;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -61,4 +65,36 @@ public class CompraUI extends UI {
         table.setSelectable(true); //Para poder seleccionar los registros
         table.setSizeFull();
     }
+    
+    /**
+     * Método encargado de cargar el menú de navegación
+     * @return Panel
+     */
+    private static Panel cargarMenu() {
+        final Panel userPanel = new Panel();
+        final HorizontalLayout hLayout = new HorizontalLayout();
+        final Button btnInicio = new Button("Inicio");
+        final Button btnCartelera = new Button("Cartelera");
+        final Button btnPerfil = new Button("Perfil");
+        
+        btnInicio.addClickListener(e -> {
+            Page.getCurrent().setLocation("/home");
+        });
+        
+        btnCartelera.addClickListener(e -> {
+            Page.getCurrent().setLocation("/cartelera");
+        });
+        
+        btnPerfil.addClickListener(e -> {
+            Page.getCurrent().setLocation("/perfil");
+        });
+        
+        hLayout.addComponents(btnInicio, btnCartelera, btnPerfil);
+        hLayout.setMargin(true);
+        hLayout.setSpacing(true);
+        userPanel.setContent(hLayout);
+        
+        return userPanel;
+    }
+    
 }
