@@ -52,6 +52,12 @@ public class CarteleraUI extends UI {
         // botón para cerrar sesión
         final Button btnLogout = new Button("Cerrar sesión");
         
+        // al pulsar el botón de cerrar sesión, sale de la sesión
+        // y redirecciona al login
+        btnLogout.addClickListener(e -> {
+            Page.getCurrent().setLocation("/");
+        });
+        
         // tabla con el registro de películas
         final Table tablePeliculas = new Table();
         definirCabeceraTabla(tablePeliculas);

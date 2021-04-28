@@ -21,6 +21,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -31,7 +32,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Theme("mytheme")
-@PreserveOnRefresh
 public class LoginUI extends UI {
 
     // Nombre de clase de la interfaz completa
@@ -54,11 +54,7 @@ public class LoginUI extends UI {
 
         // Campos usuario y contraseña
         final TextField username = new TextField("Usuario");
-        final TextField password = new TextField("Contraseña");
-
-        List<TextField> camposLogin = new ArrayList<TextField>();
-        camposLogin.add(username);
-        camposLogin.add(password);
+        final PasswordField password = new PasswordField("Contraseña");
 
         // Layout simulando un div inline
         final HorizontalLayout divButtons = new HorizontalLayout();
@@ -75,7 +71,7 @@ public class LoginUI extends UI {
 
         //
         btnLogin.addClickListener(e -> {
-            if (camposValidos(camposLogin)) {
+            if (camposValidos(username, password)) {
 
                 MongoClient mongoClient;
                 try {
@@ -125,7 +121,7 @@ public class LoginUI extends UI {
      * @param db base de datos
      * @return TRUE/FALSE
      */
-    public static boolean existeUsuario(TextField username, TextField password,
+    public static boolean existeUsuario(TextField username, PasswordField password,
             DB db) {
         boolean existe = false;
 
@@ -157,19 +153,20 @@ public class LoginUI extends UI {
 
     /**
      * Método encargado de comprobar que los campos sean válidos
-     * @param camposLogin listado de campos del formulario de login
+     * @param username campo de usuario
+     * @param password campo de contraseña
      * @return TRUE/FALSE
      */
-    public static boolean camposValidos(List<TextField> camposLogin) {
+    public static boolean camposValidos(TextField username, PasswordField password) {
         boolean esCorrecto = true;
 
         List<String> errores = new ArrayList<>();
 
-        if (camposLogin.get(0).getValue() == "") {
+        if (username.getValue() == "") {
             esCorrecto = false;
             errores.add("El campo 'Usuario' es obligatorio.");
         }
-        if (camposLogin.get(1).getValue() == "") {
+        if (password.getValue() == "") {
             esCorrecto = false;
             errores.add("El campo 'Contraseña' es obligatorio.");
         }
