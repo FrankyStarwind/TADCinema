@@ -5,7 +5,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.vaadin.annotations.PreserveOnRefresh;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
@@ -79,7 +78,7 @@ public class LoginUI extends UI {
                     DB db = mongoClient.getDB("TADCinemaDB");
                     if (existeUsuario(username, password, db)) {
                         session.setAttribute("usuario", username.getValue());
-                        Page.getCurrent().setLocation("/cartelera");
+                        Page.getCurrent().setLocation("/home");
                     }
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(LoginUI.class.getName()).log(Level.SEVERE, null, ex);
