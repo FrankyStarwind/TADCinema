@@ -126,9 +126,9 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.plugin.version}</version>
                 <configuration>
-                    <httpConnector>
+                    <!--<httpConnector>
                         <port>4289</port>
-                    </httpConnector>
+                    </httpConnector>-->
                     <scanIntervalSeconds>2</scanIntervalSeconds>
                 </configuration>
             </plugin>
