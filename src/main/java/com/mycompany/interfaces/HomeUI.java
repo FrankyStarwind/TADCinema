@@ -19,6 +19,8 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.annotation.WebServlet;
@@ -26,13 +28,13 @@ import javax.servlet.annotation.WebServlet;
 @Theme("mytheme")
 @PreserveOnRefresh
 public class HomeUI extends UI {
-    
+    public static List<Panel> lista;
     @Override
     protected void init(VaadinRequest request) {
         final WrappedSession session = getSession().getSession();
         final VerticalLayout rootLayout = new VerticalLayout();
         final Button btnLogout = new Button("Cerrar sesión");
-        
+        lista= new ArrayList<>();
         // comprueba si se ha iniciado sesión
         comprobarSesion(rootLayout, session);
         
@@ -57,7 +59,7 @@ public class HomeUI extends UI {
         
         final DBCollection movies = bbdd.getColeccion();
         cargarPeliculas(movies, carteleraPanel);
-        
+
         //--------------------------------------
         
         // ESTRUCTURA DE LA INTERFAZ
@@ -112,9 +114,13 @@ public class HomeUI extends UI {
             layoutInner.setSpacing(true);
             panelInner.setContent(layoutInner);
             layout.addComponent(panelInner);
+            lista.add(panelInner);
         }
         
         panel.setContent(layout);
+    }
+    public void mostrarSesion(){
+        
     }
     
 }
