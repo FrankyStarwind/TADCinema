@@ -20,7 +20,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -145,7 +144,21 @@ public class PerfilUI extends UI {
             addWindow(ventanaConfirmacion);
         });
         
-        // FALTA ELIMINAR CUENTA
+        // elimina el usuario al confirmar eliminación
+        btnConfirmar.addClickListener(e -> {
+            // busca usuario por id
+            DBObject usuario = usuarios.findOne(new BasicDBObject().append("_id", dniUsuario));
+            // se elimina el usuario de la tabla
+            usuarios.remove(usuario);
+            // invalida la sesión y redirige al login
+            session.invalidate();
+            Page.getCurrent().setLocation("/");
+        });
+        
+        // cierra la ventana de confirmación
+        btnCancelar.addClickListener(e -> {
+            removeWindow(ventanaConfirmacion);
+        });
 
         // ESTRUCTURA DE COMPONENTES
         botonera.addComponents(btnGuardar, btnEliminar);

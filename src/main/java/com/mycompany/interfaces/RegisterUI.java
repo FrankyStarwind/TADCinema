@@ -18,6 +18,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -56,9 +57,8 @@ public class RegisterUI extends UI {
         final TextField username = new TextField("Usuario");
         username.setRequired(true);
         campos.add(username);
-        final TextField password = new TextField("Contraseña");
+        final PasswordField password = new PasswordField("Contraseña");
         password.setRequired(true);
-        campos.add(password);
         
         final Label infoOblig = new Label("<p><span style=\"color: #ed473b;\">*"
                 + "</span> Campo obligatorio</p>", ContentMode.HTML);
@@ -70,7 +70,7 @@ public class RegisterUI extends UI {
         final Button btnRegister = new Button("Regístrate");
         btnRegister.setStyleName("primary");
         // Botón para cancelar el registro
-        final Button btnCancel = new Button("Cancelar");
+        final Button btnCancel = new Button("Volver");
         btnCancel.setStyleName("danger");
 
         divButtons.addComponents(btnRegister, btnCancel);
@@ -107,7 +107,7 @@ public class RegisterUI extends UI {
                         usuarios.insert(usuario);
 
                         // resetea valores
-                        resetearCampos(campos);
+                        resetearCampos(campos, password);
 
                         // mensaje de éxito
                         verticalLayout.addComponent(new Label("<p style=\"color: green; "
@@ -156,7 +156,7 @@ public class RegisterUI extends UI {
      * @param password contraseña
      * @return TRUE/FALSE
      */
-    public static boolean camposValidos(TextField name, TextField surname, TextField dni, TextField password) {
+    public static boolean camposValidos(TextField name, TextField surname, TextField dni, PasswordField password) {
         boolean esCorrecto = true;
 
         List<String> errores = new ArrayList<>();
@@ -196,10 +196,12 @@ public class RegisterUI extends UI {
      *
      * @param campos listado de campos
      */
-    public static void resetearCampos(List<TextField> campos) {
+    public static void resetearCampos(List<TextField> campos, PasswordField password) {
         for (TextField campo : campos) {
             campo.setValue("");
         }
+        
+        password.setValue("");
     }
 
     /**

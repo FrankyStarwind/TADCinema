@@ -33,17 +33,10 @@ import java.util.logging.Logger;
 @Theme("mytheme")
 public class LoginUI extends UI {
 
-    // Nombre de clase de la interfaz completa
-    public static final String CLASSNAME = "login";
-
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         // obtengo la sesion
         final WrappedSession session = getSession().getSession();
-        
-        // Layout general con css
-        final CssLayout layout = new CssLayout();
-        layout.setStyleName(CLASSNAME);
 
         // Layouts, panel y el label de información
         final VerticalLayout verticalLayout = new VerticalLayout();
@@ -68,7 +61,7 @@ public class LoginUI extends UI {
         divButtons.addComponents(btnLogin, btnRegister);
         divButtons.setSpacing(true);
 
-        //
+        // iniciar sesión en el sistema
         btnLogin.addClickListener(e -> {
             if (camposValidos(username, password)) {
 
@@ -85,6 +78,7 @@ public class LoginUI extends UI {
                 }
             }
         });
+        
         // redireccion a registro al pulsar el boton
         btnRegister.addClickListener(e -> {
             Page.getCurrent().setLocation("/registro");
@@ -94,7 +88,6 @@ public class LoginUI extends UI {
         form.addComponents(username, password, divButtons);
         form.setSpacing(true);
         form.setMargin(true);
-        form.setStyleName(CLASSNAME + "-form");
         
         loginPanel.setContent(form);
         loginPanel.setWidth("440px");
@@ -103,9 +96,7 @@ public class LoginUI extends UI {
         verticalLayout.setMargin(true);
         verticalLayout.setSpacing(true);
 
-        layout.addComponent(verticalLayout);
-
-        setContent(layout);
+        setContent(verticalLayout);
     }
 
     @WebServlet(urlPatterns = "/*", name = "LoginUIServlet", asyncSupported = true)
