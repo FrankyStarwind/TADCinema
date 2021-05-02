@@ -51,9 +51,9 @@ public class RegisterUI extends UI {
         final TextField dni = new TextField("Dni");
         dni.setRequired(true);
         campos.add(dni);
-        final TextField telefono = new TextField("Teléfono");
-        telefono.setRequired(false);
-        campos.add(telefono);
+        final TextField correo = new TextField("Correo");
+        correo.setRequired(false);
+        campos.add(correo);
         final TextField username = new TextField("Usuario");
         username.setRequired(true);
         campos.add(username);
@@ -98,7 +98,7 @@ public class RegisterUI extends UI {
                         usuario.append("nombre", name.getValue());
                         usuario.append("apellidos", surname.getValue());
                         usuario.append("_id", dni.getValue());
-                        usuario.append("telefono", telefono.getValue());
+                        usuario.append("correo", correo.getValue());
                         usuario.append("username", username.getValue());
                         usuario.append("contraseña", password.getValue());
 
@@ -128,7 +128,7 @@ public class RegisterUI extends UI {
         });
 
         // Se añaden los componentes al formulario
-        form.addComponents(name, surname, dni, telefono, username, password, infoOblig, divButtons);
+        form.addComponents(name, surname, dni, correo, username, password, infoOblig, divButtons);
         form.setMargin(true);
         form.setSpacing(true);
         
