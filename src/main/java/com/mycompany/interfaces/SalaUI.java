@@ -6,19 +6,20 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.ClassResource;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WrappedSession;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
@@ -27,7 +28,7 @@ import javax.servlet.annotation.WebServlet;
 @PreserveOnRefresh
 public class SalaUI extends UI {
 
-    public static WrappedSession session = null; //Definimos el elemento de sesión
+    public String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
 
     @Override
     protected void init(VaadinRequest request) {
@@ -76,7 +77,7 @@ public class SalaUI extends UI {
             
         });
         
-        final Image image = new Image("Imagen sala", new ClassResource("sala.JPG"));
+        final Image image = new Image(null, new FileResource(new File(basepath + "/WEB-INF/images/sala.JPG")));
         
         rootLayout.addComponents(btnLogout, navbar, image, tablePeliculas);
         rootLayout.setMargin(true);
