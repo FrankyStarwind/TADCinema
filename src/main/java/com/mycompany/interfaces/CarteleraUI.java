@@ -5,6 +5,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mycompany.components.Navegacion;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -34,30 +35,21 @@ public class CarteleraUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-        // layout vertical y label
-        final VerticalLayout verticalLayout = new VerticalLayout();
-        final Label nombreUsuario = new Label();
-
-        // se obtiene la sesión
-        session = getSession().getSession();
-
-        if (session.getAttribute("usuario") == null) {
-            session.invalidate();
-            Page.getCurrent().setLocation("/login");
-        } else {
-            nombreUsuario.setValue("Bienvenido, " + session.getAttribute("usuario"));
-        }
-        
-        // botón para cerrar sesión
+        final WrappedSession session = getSession().getSession();
+        final VerticalLayout rootLayout = new VerticalLayout();
         final Button btnLogout = new Button("Cerrar sesión");
         
-        // al pulsar el botón de cerrar sesión, sale de la sesión
-        // y redirecciona al login
+        // comprueba si se ha iniciado sesión
+        comprobarSesion(rootLayout, session);
+        
+        // invalida la sesion y redirecciona a login
         btnLogout.addClickListener(e -> {
+            session.invalidate();
             Page.getCurrent().setLocation("/");
         });
         
-        final Panel userPanel = cargarMenu();
+        // panel de navegación
+        final Navegacion navbar = new Navegacion();
         
         // tabla con el registro de películas
         final Table tablePeliculas = new Table();
@@ -75,7 +67,6 @@ public class CarteleraUI extends UI {
                 new ItemClickEvent.ItemClickListener() {
             @Override
             public void itemClick(ItemClickEvent event) {
-                session = getSession().getSession();
                 String nomPeli = event.getItem().getItemProperty("Película").getValue().toString();
                 session.setAttribute("sessionNombrePelicula", nomPeli);
                 Notification.show("Entrando en las sesiones de " + nomPeli, "Entrando, espere por favor",
@@ -84,16 +75,29 @@ public class CarteleraUI extends UI {
             }
         });
         
-        verticalLayout.addComponents(nombreUsuario, btnLogout, userPanel, tablePeliculas);
-        verticalLayout.setMargin(true);
-        verticalLayout.setSpacing(true);
+        rootLayout.addComponents(btnLogout, navbar, tablePeliculas);
+        rootLayout.setMargin(true);
+        rootLayout.setSpacing(true);
 
-        setContent(verticalLayout);
+        setContent(rootLayout);
     }
 
     @WebServlet(urlPatterns = "/cartelera/*", name = "CarteleraUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = CarteleraUI.class, productionMode = false)
     public static class CarteleraUIServlet extends VaadinServlet {
+    }
+    
+    /**
+     * Método encargado de comprobar si la sesión existe o no
+     * Si no existe, redirecciona al login
+     */
+    private static void comprobarSesion(final VerticalLayout rootLayout, final WrappedSession session) {
+        if(session.getAttribute("usuario") == null){
+            Page.getCurrent().setLocation("/");
+        } else {
+            final Label bienvenido = new Label("Bienvenido, " + session.getAttribute("usuario"));
+            rootLayout.addComponent(bienvenido);
+        }
     }
 
     public void definirCabeceraTabla(Table table) {
@@ -122,37 +126,6 @@ public class CarteleraUI extends UI {
 
         }
 
-    }
-    
-    /**
-     * Método encargado de cargar el menú de navegación
-     * @return Panel
-     */
-    private static Panel cargarMenu() {
-        final Panel userPanel = new Panel();
-        final HorizontalLayout hLayout = new HorizontalLayout();
-        final Button btnInicio = new Button("Inicio");
-        final Button btnCartelera = new Button("Cartelera");
-        final Button btnPerfil = new Button("Perfil");
-        
-        btnInicio.addClickListener(e -> {
-            Page.getCurrent().setLocation("/home");
-        });
-        
-        btnCartelera.addClickListener(e -> {
-            Page.getCurrent().setLocation("/cartelera");
-        });
-        
-        btnPerfil.addClickListener(e -> {
-            Page.getCurrent().setLocation("/perfil");
-        });
-        
-        hLayout.addComponents(btnInicio, btnCartelera, btnPerfil);
-        hLayout.setMargin(true);
-        hLayout.setSpacing(true);
-        userPanel.setContent(hLayout);
-        
-        return userPanel;
     }
     
 }

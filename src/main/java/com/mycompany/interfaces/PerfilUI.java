@@ -1,11 +1,10 @@
 package com.mycompany.interfaces;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
+import com.mycompany.components.Navegacion;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -55,19 +54,17 @@ public class PerfilUI extends UI {
             Page.getCurrent().setLocation("/");
         });
 
-        // acceso a la base de datos
-        MongoClient mongoClient = null;
+        // acceso a la base de datos (tabla usuarios)
+        BBDD bbdd = null;
         try {
-            mongoClient = new MongoClient("localhost", 27017);
+            bbdd = new BBDD("usuarios");
         } catch (UnknownHostException ex) {
             Logger.getLogger(PerfilUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        final DB db = mongoClient.getDB("TADCinemaDB");
-        // tabla usuarios
-        final DBCollection usuarios = db.getCollection("usuarios");
+        final DBCollection usuarios = bbdd.getColeccion();
 
         // panel para la navegación
-        final Panel navPanel = cargarMenu();
+        final Navegacion navbar = new Navegacion();
         // panel para el formulario de datos de usuario
         final Panel datosPanel = new Panel("Mis datos");
 
@@ -124,6 +121,7 @@ public class PerfilUI extends UI {
             }
         });
         
+        // botonera de confirmar/cancelar
         final HorizontalLayout botoneraPopup = new HorizontalLayout();
         final Button btnConfirmar = new Button("Eliminar");
         btnConfirmar.setStyleName("danger");
@@ -131,13 +129,14 @@ public class PerfilUI extends UI {
         botoneraPopup.addComponents(btnConfirmar, btnCancelar);
         botoneraPopup.setMargin(true);
         botoneraPopup.setSpacing(true);
+        
+        // ventana confirmación
         final Window ventanaConfirmacion = new Window("¿Estás seguro?");
         ventanaConfirmacion.center();
         ventanaConfirmacion.setClosable(false);
         ventanaConfirmacion.setDraggable(false);
         ventanaConfirmacion.setResizable(false);
         ventanaConfirmacion.setContent(botoneraPopup);
-        
         
         // clic al botón eliminar
         btnEliminar.addClickListener(e -> {
@@ -171,7 +170,7 @@ public class PerfilUI extends UI {
         vInterior.addComponents(new Label("A continuación, puedes modificar tus datos en este formulario:"), formDatos);
         datosPanel.setContent(vInterior);
 
-        rootLayout.addComponents(btnLogout, navPanel, datosPanel);
+        rootLayout.addComponents(btnLogout, navbar, datosPanel);
 
         rootLayout.setMargin(true);
         rootLayout.setSpacing(true);
@@ -231,7 +230,7 @@ public class PerfilUI extends UI {
                         dniUsuario = usuario.get("_id").toString();
                         break;
                     case "Correo":
-                        campo.setValue(usuario.get("telefono").toString());
+                        campo.setValue(usuario.get("correo").toString());
                         break;
                     case "Usuario":
                         campo.setValue(usuario.get("username").toString());
@@ -253,7 +252,7 @@ public class PerfilUI extends UI {
      * @return TRUE/FALSE
      */
     private static boolean validarCampos(final List<TextField> campos, final PasswordField pass,
-            final PasswordField newPass, final DBCollection usuarios) {
+        final PasswordField newPass, final DBCollection usuarios) {
         final DBCursor cursor = usuarios.find();
         boolean sonValidos = true;
         String clave = "";
@@ -322,38 +321,6 @@ public class PerfilUI extends UI {
         }
 
         return sonValidos;
-    }
-
-    /**
-     * Método encargado de cargar el menú de navegación
-     *
-     * @return Panel
-     */
-    private static Panel cargarMenu() {
-        final Panel userPanel = new Panel();
-        final HorizontalLayout hLayout = new HorizontalLayout();
-        final Button btnInicio = new Button("Inicio");
-        final Button btnCartelera = new Button("Cartelera");
-        final Button btnPerfil = new Button("Perfil");
-
-        btnInicio.addClickListener(e -> {
-            Page.getCurrent().setLocation("/home");
-        });
-
-        btnCartelera.addClickListener(e -> {
-            Page.getCurrent().setLocation("/cartelera");
-        });
-
-        btnPerfil.addClickListener(e -> {
-            Page.getCurrent().setLocation("/perfil");
-        });
-
-        hLayout.addComponents(btnInicio, btnCartelera, btnPerfil);
-        hLayout.setMargin(true);
-        hLayout.setSpacing(true);
-        userPanel.setContent(hLayout);
-
-        return userPanel;
     }
 
 }

@@ -1,17 +1,21 @@
 package com.mycompany.interfaces;
 
+import com.mycompany.components.Navegacion;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.ClassResource;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WrappedSession;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -27,7 +31,21 @@ public class SalaUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-        final VerticalLayout layout = new VerticalLayout();
+        final WrappedSession session = getSession().getSession();
+        final VerticalLayout rootLayout = new VerticalLayout();
+        final Button btnLogout = new Button("Cerrar sesión");
+        
+        // comprueba si se ha iniciado sesión
+        comprobarSesion(rootLayout, session);
+        
+        // invalida la sesion y redirecciona a login
+        btnLogout.addClickListener(e -> {
+            session.invalidate();
+            Page.getCurrent().setLocation("/");
+        });
+        
+        // panel de navegación
+        final Navegacion navbar = new Navegacion();
 
         final Table tablePeliculas = new Table();
         definirCabeceraTabla(tablePeliculas);
@@ -49,7 +67,6 @@ public class SalaUI extends UI {
                 new ItemClickEvent.ItemClickListener() {
             @Override
             public void itemClick(ItemClickEvent event) {
-                session = getSession().getSession();
                 String nomPeli=event.getItem().getItemProperty("Pelicula").getValue().toString();
                 session.setAttribute("sessionNombrePelicula", nomPeli);
                 Notification.show("Entrando en las sesiones de "+nomPeli, "Entrando, espere por favor",
@@ -58,13 +75,14 @@ public class SalaUI extends UI {
             }
             
         });
-        layout.addComponent(new Image("Imagen sala",
-                new ClassResource("sala.JPG")));
-        layout.addComponents(tablePeliculas);
-        layout.setMargin(true);
-        layout.setSpacing(true);
+        
+        final Image image = new Image("Imagen sala", new ClassResource("sala.JPG"));
+        
+        rootLayout.addComponents(btnLogout, navbar, image, tablePeliculas);
+        rootLayout.setMargin(true);
+        rootLayout.setSpacing(true);
 
-        setContent(layout);
+        setContent(rootLayout);
     }
 
     @WebServlet(urlPatterns = "/sala/*", name = "SalaUIServlet", asyncSupported = true)
@@ -72,6 +90,19 @@ public class SalaUI extends UI {
     public static class SalaUIServlet extends VaadinServlet {
     }
 
+    /**
+     * Método encargado de comprobar si la sesión existe o no
+     * Si no existe, redirecciona al login
+     */
+    private static void comprobarSesion(final VerticalLayout rootLayout, final WrappedSession session) {
+        if(session.getAttribute("usuario") == null){
+            Page.getCurrent().setLocation("/");
+        } else {
+            final Label bienvenido = new Label("Bienvenido, " + session.getAttribute("usuario"));
+            rootLayout.addComponent(bienvenido);
+        }
+    }
+    
     public void definirCabeceraTabla(Table table) {
         table.addContainerProperty("Fila", Integer.class, null);
         table.addContainerProperty("Asiento", Integer.class, null);
@@ -81,4 +112,5 @@ public class SalaUI extends UI {
         //table.setSelectable(true); //Para poder seleccionar los registros
         table.setSizeFull();
     }
+    
 }
