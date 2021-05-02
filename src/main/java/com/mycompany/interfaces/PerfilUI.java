@@ -81,8 +81,8 @@ public class PerfilUI extends UI {
         listaCampos.add(apellidos);
         final TextField dni = new TextField("Dni");
         listaCampos.add(dni);
-        final TextField telefono = new TextField("Teléfono");
-        listaCampos.add(telefono);
+        final TextField correo = new TextField("Correo");
+        listaCampos.add(correo);
         final TextField username = new TextField("Usuario");
         listaCampos.add(username);
         final PasswordField password = new PasswordField("Contraseña");
@@ -105,7 +105,7 @@ public class PerfilUI extends UI {
                 usuarioEdit.append("nombre", nombre.getValue());
                 usuarioEdit.append("apellidos", apellidos.getValue());
                 usuarioEdit.append("_id", dni.getValue());
-                usuarioEdit.append("telefono", telefono.getValue());
+                usuarioEdit.append("correo", correo.getValue());
                 usuarioEdit.append("username", username.getValue());
                 if (cambiaClave) {
                     usuarioEdit.append("contraseña", newPassword.getValue());
@@ -164,7 +164,7 @@ public class PerfilUI extends UI {
         botonera.addComponents(btnGuardar, btnEliminar);
         botonera.setSpacing(true);
 
-        formDatos.addComponents(nombre, apellidos, dni, telefono, username, password, newPassword, botonera);
+        formDatos.addComponents(nombre, apellidos, dni, correo, username, password, newPassword, botonera);
         formDatos.setMargin(true);
 
         vInterior.setMargin(true);
@@ -230,7 +230,7 @@ public class PerfilUI extends UI {
                         campo.setValue(usuario.get("_id").toString());
                         dniUsuario = usuario.get("_id").toString();
                         break;
-                    case "Teléfono":
+                    case "Correo":
                         campo.setValue(usuario.get("telefono").toString());
                         break;
                     case "Usuario":
