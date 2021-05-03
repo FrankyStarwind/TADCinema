@@ -71,7 +71,7 @@ public class CarteleraUI extends UI {
                 session.setAttribute("sessionNombrePelicula", nomPeli);
                 Notification.show("Entrando en las sesiones de " + nomPeli, "Entrando, espere por favor",
                         Notification.Type.HUMANIZED_MESSAGE);
-                //Page.getCurrent().setLocation("/"+"session");
+                Page.getCurrent().setLocation("/"+"session");
             }
         });
         

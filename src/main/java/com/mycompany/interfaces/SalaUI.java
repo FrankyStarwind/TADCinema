@@ -36,6 +36,10 @@ public class SalaUI extends UI {
         final VerticalLayout rootLayout = new VerticalLayout();
         final Button btnLogout = new Button("Cerrar sesión");
         
+        String s =session.getAttribute("nombrePeli").toString();
+        final Label nomPeli = new Label(s);
+        
+        //nomPeli.setCaption(s);
         // comprueba si se ha iniciado sesión
         comprobarSesion(rootLayout, session);
         
@@ -79,14 +83,14 @@ public class SalaUI extends UI {
         
         final Image image = new Image(null, new FileResource(new File(basepath + "/WEB-INF/images/sala.JPG")));
         
-        rootLayout.addComponents(btnLogout, navbar, image, tablePeliculas);
+        rootLayout.addComponents(btnLogout, navbar, nomPeli,image, tablePeliculas);
         rootLayout.setMargin(true);
         rootLayout.setSpacing(true);
 
         setContent(rootLayout);
     }
 
-    @WebServlet(urlPatterns = "/sala/*", name = "SalaUIServlet", asyncSupported = true)
+    @WebServlet(urlPatterns = "/session/*", name = "SalaUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = SalaUI.class, productionMode = false)
     public static class SalaUIServlet extends VaadinServlet {
     }
