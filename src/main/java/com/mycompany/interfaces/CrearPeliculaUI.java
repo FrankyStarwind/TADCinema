@@ -1,7 +1,9 @@
 package com.mycompany.interfaces;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mycompany.components.Navegacion;
-import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Page;
@@ -12,16 +14,19 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.annotation.WebServlet;
 
 @Theme("mytheme")
-@PreserveOnRefresh
 public class CrearPeliculaUI extends UI {
 
     @Override
@@ -80,7 +85,34 @@ public class CrearPeliculaUI extends UI {
         
         panelCreate.setContent(layoutCreate);
         
-        // FALTA FUNCIÓN CREAR PELÍCULA
+        // crea una película nueva 
+        btnCrear.addClickListener(e -> {
+            if(validarCampos(titulo, sala, idioma, director, anyo, duracion)) {
+                try {
+                    BBDD bbdd = new BBDD("movies");
+                    
+                    DBCollection movies = bbdd.getColeccion();
+                    
+                    BasicDBObject pelicula = new BasicDBObject();
+                    pelicula.append("titulo", titulo.getValue());
+                    pelicula.append("sala", sala.getValue());
+                    pelicula.append("idioma", idioma.getValue());
+                    pelicula.append("director", director.getValue());
+                    pelicula.append("año", anyo.getValue());
+                    pelicula.append("duracion", duracion.getValue());
+                    
+                    DBObject movie = movies.findOne(pelicula);
+                    
+                    if (movie == null) {
+                        movies.insert(pelicula);
+                        resetarCampos(titulo, sala, idioma, director, anyo, duracion);
+                        Notification.show("Se ha creado la película correctamente", Notification.Type.TRAY_NOTIFICATION);
+                    }
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(CrearPeliculaUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
 
         // ESTRUCTURA DE LA INTERFAZ
         rootLayout.addComponents(btnLogout, navbar, panelCreate);
@@ -131,6 +163,70 @@ public class CrearPeliculaUI extends UI {
         lista.add("VOSE");
         lista.add("Español latino");
         return lista;
+    }
+    
+    /**
+     * Método encargado de validar los campos del formulario
+     * @param titulo Título de la película
+     * @param sala Sala del cine
+     * @param idioma Idioma de la película
+     * @param director Director de la película
+     * @param año Año de estreno de la película
+     * @param duracion Duración en minutos de la película
+     * @return TRUE/FALSE
+     */
+    private static boolean validarCampos(TextField titulo, ComboBox sala, ComboBox idioma, TextField director, TextField anyo, TextField duracion) {
+        boolean validos = true;
+        String errores = "";
+        
+        if (titulo.getValue() == "") {
+            errores += "El campo 'Título' es obligatorio\n";
+            validos = false;
+        }
+        if (sala.getValue() == null) {
+            errores += "El campo 'Sala' no puede estar vacío\n";
+            validos = false;
+        }
+        if (idioma.getValue() == null) {
+            errores += "El campo 'Idioma' no puede estar vacío\n";
+            validos = false;
+        }
+        if (director.getValue() == "") {
+            errores += "El campo 'Director' es obligatorio\n";
+            validos = false;
+        }
+        if (anyo.getValue() == "") {
+            errores += "El campo 'Año' es obligatorio\n";
+            validos = false;
+        }
+        if (duracion.getValue() == "") {
+            errores += "El campo 'Duración' es obligatorio";
+            validos = false;
+        }
+        
+        if (!validos) {
+            Notification.show("Error", errores, Notification.Type.ERROR_MESSAGE);
+        }
+        
+        return validos;
+    }
+    
+    /**
+     * Método encargado de resetear los campos del formulario
+     * @param titulo Título de la película
+     * @param sala Sala del cine
+     * @param idioma Idioma de la película
+     * @param director Director de la película
+     * @param año Año de estreno de la película
+     * @param duracion Duración en minutos de la película
+     */
+    private static void resetarCampos(TextField titulo, ComboBox sala, ComboBox idioma, TextField director, TextField anyo, TextField duracion) {
+        titulo.setValue("");
+        sala.setValue(null);
+        idioma.setValue(null);
+        director.setValue("");
+        anyo.setValue("");
+        duracion.setValue("");
     }
 
 }

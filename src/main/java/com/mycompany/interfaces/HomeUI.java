@@ -125,15 +125,15 @@ public class HomeUI extends UI {
         DBObject movie = null;
         while (cursor.hasNext()) {
             movie = cursor.next();
-            final Panel panelInner = new Panel(movie.get("name").toString());
+            final Panel panelInner = new Panel(movie.get("titulo").toString());
             final VerticalLayout layoutInner = new VerticalLayout();
-            final Label titulo = new Label("<strong>Título:</strong> " + movie.get("name"), ContentMode.HTML);
-            final Label sala = new Label("<strong>Sala:</strong> " + movie.get("numSala"), ContentMode.HTML);
-            final Label idioma = new Label("<strong>Idioma:</strong> " + movie.get("type"), ContentMode.HTML);
-            Double anyo = (Double) movie.get("year");
+            final Label titulo = new Label("<strong>Título:</strong> " + movie.get("titulo"), ContentMode.HTML);
+            final Label sala = new Label("<strong>Sala:</strong> " + movie.get("sala"), ContentMode.HTML);
+            final Label idioma = new Label("<strong>Idioma:</strong> " + movie.get("idioma"), ContentMode.HTML);
+            Double anyo = Double.parseDouble(movie.get("año").toString());
             final Label year = new Label("<strong>Año:</strong> " + anyo.intValue(), ContentMode.HTML);
             final Label director = new Label("<strong>Director:</strong> " + movie.get("director"), ContentMode.HTML);
-            Double time = (Double) movie.get("time");
+            Double time = Double.parseDouble(movie.get("duracion").toString());
             final Label duracion = new Label("<strong>Duración:</strong> " + time.intValue() + " minutos", ContentMode.HTML);
 //            final Button b = new Button("Acceder");
 //            
