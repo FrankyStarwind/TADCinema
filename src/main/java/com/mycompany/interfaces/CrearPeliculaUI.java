@@ -56,9 +56,6 @@ public class CrearPeliculaUI extends UI {
         final TextField titulo = new TextField("Título");
         titulo.setRequired(true);
         titulo.setInputPrompt("Título de la película");
-        final ComboBox sala = new ComboBox("Sala", comboSala());
-        sala.setInputPrompt("Elige sala");
-        sala.setRequired(true);
         final ComboBox idioma = new ComboBox("Idioma", comboIdioma());
         idioma.setRequired(true);
         idioma.setInputPrompt("Elige idioma");
@@ -76,7 +73,7 @@ public class CrearPeliculaUI extends UI {
         final Button btnCrear = new Button("Crear película");
         btnCrear.setStyleName("primary");
         
-        formCreate.addComponents(titulo, sala, idioma, director, anyo, duracion, btnCrear);
+        formCreate.addComponents(titulo, idioma, director, anyo, duracion, btnCrear);
         formCreate.setMargin(true);
         
         layoutCreate.addComponents(new Label("Por favor, rellene todos los campos para añadir una nueva película."), formCreate);
@@ -87,7 +84,7 @@ public class CrearPeliculaUI extends UI {
         
         // crea una película nueva 
         btnCrear.addClickListener(e -> {
-            if(validarCampos(titulo, sala, idioma, director, anyo, duracion)) {
+            if(validarCampos(titulo, idioma, director, anyo, duracion)) {
                 try {
                     BBDD bbdd = new BBDD("movies");
                     
@@ -95,7 +92,6 @@ public class CrearPeliculaUI extends UI {
                     
                     BasicDBObject pelicula = new BasicDBObject();
                     pelicula.append("titulo", titulo.getValue());
-                    pelicula.append("sala", sala.getValue());
                     pelicula.append("idioma", idioma.getValue());
                     pelicula.append("director", director.getValue());
                     pelicula.append("año", anyo.getValue());
@@ -105,7 +101,7 @@ public class CrearPeliculaUI extends UI {
                     
                     if (movie == null) {
                         movies.insert(pelicula);
-                        resetarCampos(titulo, sala, idioma, director, anyo, duracion);
+                        resetarCampos(titulo, idioma, director, anyo, duracion);
                         Notification.show("Se ha creado la película correctamente", Notification.Type.TRAY_NOTIFICATION);
                     }
                 } catch (UnknownHostException ex) {
@@ -175,16 +171,12 @@ public class CrearPeliculaUI extends UI {
      * @param duracion Duración en minutos de la película
      * @return TRUE/FALSE
      */
-    private static boolean validarCampos(TextField titulo, ComboBox sala, ComboBox idioma, TextField director, TextField anyo, TextField duracion) {
+    private static boolean validarCampos(TextField titulo, ComboBox idioma, TextField director, TextField anyo, TextField duracion) {
         boolean validos = true;
         String errores = "";
         
         if (titulo.getValue() == "") {
             errores += "El campo 'Título' es obligatorio\n";
-            validos = false;
-        }
-        if (sala.getValue() == null) {
-            errores += "El campo 'Sala' no puede estar vacío\n";
             validos = false;
         }
         if (idioma.getValue() == null) {
@@ -220,9 +212,8 @@ public class CrearPeliculaUI extends UI {
      * @param año Año de estreno de la película
      * @param duracion Duración en minutos de la película
      */
-    private static void resetarCampos(TextField titulo, ComboBox sala, ComboBox idioma, TextField director, TextField anyo, TextField duracion) {
+    private static void resetarCampos(TextField titulo, ComboBox idioma, TextField director, TextField anyo, TextField duracion) {
         titulo.setValue("");
-        sala.setValue(null);
         idioma.setValue(null);
         director.setValue("");
         anyo.setValue("");
