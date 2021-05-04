@@ -1,11 +1,9 @@
 package com.mycompany.interfaces;
 
 import com.mycompany.components.Navegacion;
-import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.server.ClassResource;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
@@ -25,7 +23,6 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 
 @Theme("mytheme")
-@PreserveOnRefresh
 public class SalaUI extends UI {
 
     public String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
