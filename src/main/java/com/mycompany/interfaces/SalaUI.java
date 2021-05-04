@@ -39,7 +39,7 @@ public class SalaUI extends UI {
         String s =session.getAttribute("nombrePeli").toString();
         final Label nomPeli = new Label(s);
         
-        //nomPeli.setCaption(s);
+        nomPeli.setCaption(s);
         // comprueba si se ha iniciado sesión
         comprobarSesion(rootLayout, session);
         

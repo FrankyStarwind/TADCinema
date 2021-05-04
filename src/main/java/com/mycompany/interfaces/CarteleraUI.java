@@ -67,7 +67,7 @@ public class CarteleraUI extends UI {
                 new ItemClickEvent.ItemClickListener() {
             @Override
             public void itemClick(ItemClickEvent event) {
-                String nomPeli = event.getItem().getItemProperty("Película").getValue().toString();
+                String nomPeli = event.getItem().getItemProperty("Pelicula").getValue().toString();
                 session.setAttribute("sessionNombrePelicula", nomPeli);
                 Notification.show("Entrando en las sesiones de " + nomPeli, "Entrando, espere por favor",
                         Notification.Type.HUMANIZED_MESSAGE);
