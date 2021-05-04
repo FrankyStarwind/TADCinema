@@ -4,7 +4,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mycompany.components.Navegacion;
-import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Page;
@@ -28,7 +27,6 @@ import java.util.logging.Logger;
 import javax.servlet.annotation.WebServlet;
 
 @Theme("mytheme")
-@PreserveOnRefresh
 public class HomeUI extends UI {
 
     public static List<Panel> lista;
@@ -120,7 +118,6 @@ public class HomeUI extends UI {
             final Panel panelInner = new Panel(movie.get("titulo").toString());
             final VerticalLayout layoutInner = new VerticalLayout();
             final Label titulo = new Label("<strong>Título:</strong> " + movie.get("titulo"), ContentMode.HTML);
-            final Label sala = new Label("<strong>Sala:</strong> " + movie.get("sala"), ContentMode.HTML);
             final Label idioma = new Label("<strong>Idioma:</strong> " + movie.get("idioma"), ContentMode.HTML);
             Double anyo = Double.parseDouble(movie.get("año").toString());
             final Label year = new Label("<strong>Año:</strong> " + anyo.intValue(), ContentMode.HTML);
@@ -132,7 +129,7 @@ public class HomeUI extends UI {
 //            b.addClickListener(e->{
 //                Notification.show(DESIGN_ATTR_PLAIN_TEXT, DESIGN_ATTR_PLAIN_TEXT, Notification.Type.ERROR_MESSAGE);
 //            });
-            layoutInner.addComponents(titulo, sala, idioma, year, director, duracion
+            layoutInner.addComponents(titulo, idioma, year, director, duracion
 //                    ,
 //                    b
             );

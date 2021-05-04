@@ -103,6 +103,8 @@ public class CrearPeliculaUI extends UI {
                         movies.insert(pelicula);
                         resetarCampos(titulo, idioma, director, anyo, duracion);
                         Notification.show("Se ha creado la película correctamente", Notification.Type.TRAY_NOTIFICATION);
+                    } else {
+                        Notification.show("La película ya existe", Notification.Type.ERROR_MESSAGE);
                     }
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(CrearPeliculaUI.class.getName()).log(Level.SEVERE, null, ex);
