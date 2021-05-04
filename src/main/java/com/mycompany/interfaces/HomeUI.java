@@ -32,7 +32,7 @@ import javax.servlet.annotation.WebServlet;
 public class HomeUI extends UI {
 
     public static List<Panel> lista;
-
+    
     @Override
     protected void init(VaadinRequest request) {
         final WrappedSession session = getSession().getSession();
