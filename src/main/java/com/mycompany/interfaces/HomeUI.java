@@ -31,7 +31,7 @@ import javax.servlet.annotation.WebServlet;
 public class HomeUI extends UI {
 
     public static List<Panel> lista;
-
+    
     @Override
     protected void init(VaadinRequest request) {
         final WrappedSession session = getSession().getSession();
@@ -72,7 +72,7 @@ public class HomeUI extends UI {
                     Notification.show("Accediendo a la sesion",
                             c.getCaption(), Notification.Type.HUMANIZED_MESSAGE);
                     session.setAttribute("nombrePeli",c.getCaption());
-                    Page.getCurrent().setLocation("/cartelera");
+                    Page.getCurrent().setLocation("/sessionMovie");
                 }
                 );
             }
