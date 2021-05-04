@@ -1,5 +1,6 @@
 package com.mycompany.interfaces;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -92,9 +93,13 @@ public class SesionUI extends UI {
         
         // obtengo la colección de los usuarios
         DBCollection sesiones = db.getCollection("sessions");
-
+//
+//                BasicDBObject ref=new BasicDBObject()
+//                .append("movie",session.getAttribute("nombrePeli").toString());
         // cursor para iterar la lista de usuarios
         final DBCursor cursor = sesiones.find();
+
+        
 
         DBObject sesion;
         // recorre la lista y si lo encuentra, sale del bucle
