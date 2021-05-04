@@ -73,20 +73,12 @@ public class HomeUI extends UI {
                     Notification.show("Accediendo a la sesion",
                             c.getCaption(), Notification.Type.HUMANIZED_MESSAGE);
                     session.setAttribute("nombrePeli",c.getCaption());
-                    Page.getCurrent().setLocation("/session");
+                    Page.getCurrent().setLocation("/cartelera");
                 }
                 );
             }
         }
         
-//        for (Panel p : lista) {
-//            p.addClickListener(e -> {
-//                
-//                session.setAttribute("nombrePelicula", nombrePeli);
-//                Page.getCurrent().setLocation("/cartelera");
-//
-//            });
-//        }
         //--------------------------------------
 
         // ESTRUCTURA DE LA INTERFAZ
