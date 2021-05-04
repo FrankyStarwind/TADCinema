@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import javax.servlet.annotation.WebServlet;
 
 @Theme("mytheme")
-@PreserveOnRefresh
+
 public class SesionUI extends UI {
 
     public static WrappedSession session = null; //Definimos el elemento de sesión
@@ -51,9 +51,7 @@ public class SesionUI extends UI {
         // panel de navegación
         final Navegacion navbar = new Navegacion();
         
-        // tabla con el registro de películas
-        final Table tablePeliculas = new Table();
-        definirCabeceraTabla(tablePeliculas);
+        
         MongoClient mongoClient = null;
         try {
             mongoClient = new MongoClient("localhost", 27017);
@@ -61,21 +59,13 @@ public class SesionUI extends UI {
             Logger.getLogger(SesionUI.class.getName()).log(Level.SEVERE, null, ex);
         }
         DB db = mongoClient.getDB("TADCinemaDB");
-        cargarPeliculas(db, tablePeliculas);
-
-        tablePeliculas.addItemClickListener(
-                new ItemClickEvent.ItemClickListener() {
-            @Override
-            public void itemClick(ItemClickEvent event) {
-                String nomPeli = event.getItem().getItemProperty("Pelicula").getValue().toString();
-                session.setAttribute("sessionNombrePelicula", nomPeli);
-                Notification.show("Entrando en las sesiones de " + nomPeli, "Entrando, espere por favor",
-                        Notification.Type.HUMANIZED_MESSAGE);
-                Page.getCurrent().setLocation("/"+"session");
-            }
-        });
         
-        rootLayout.addComponents(btnLogout, navbar, tablePeliculas);
+
+        
+        
+        Label pelicula = new Label("Sesiones de "+session.getAttribute("nombrePeli").toString());
+        rootLayout.addComponents(btnLogout, navbar,pelicula);
+        mostrarSesiones(rootLayout,db);
         rootLayout.setMargin(true);
         rootLayout.setSpacing(true);
 
@@ -100,29 +90,25 @@ public class SesionUI extends UI {
         }
     }
 
-    public void definirCabeceraTabla(Table table) {
-        table.addContainerProperty("Película", String.class, null);
-        table.addContainerProperty("Sala", String.class, null);
-        table.addContainerProperty("Sesión", String.class, null);
+
+    public static void mostrarSesiones(VerticalLayout layout,DB db) {
         
-
-        table.setSelectable(true); //Para poder seleccionar los registros
-        table.setSizeFull();
-    }
-
-    public static void cargarPeliculas(DB db, Table tableP) {
         // obtengo la colección de los usuarios
-        DBCollection peliculas = db.getCollection("movies");
+        DBCollection sesiones = db.getCollection("sessions");
 
         // cursor para iterar la lista de usuarios
-        final DBCursor cursor = peliculas.find();
+        final DBCursor cursor = sesiones.find();
 
-        DBObject pelicula;
+        DBObject sesion;
         // recorre la lista y si lo encuentra, sale del bucle
         while (cursor.hasNext()) {
-            pelicula = cursor.next();
-            tableP.addItem(new Object[]{pelicula.get("name"), pelicula.get("numSala"), "16:00"}, tableP.getItemIds().size() + 1);
-
+            sesion = cursor.next();
+            
+            Button b = new Button(sesion.get("hora").toString());
+            b.addClickListener(e->{
+                Notification.show(DESIGN_ATTR_PLAIN_TEXT, DESIGN_ATTR_PLAIN_TEXT, Notification.Type.ERROR_MESSAGE);
+            });
+            layout.addComponent(b);
         }
 
     }
