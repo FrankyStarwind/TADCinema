@@ -103,9 +103,8 @@ public class SesionUI extends UI {
     public void definirCabeceraTabla(Table table) {
         table.addContainerProperty("Película", String.class, null);
         table.addContainerProperty("Sala", String.class, null);
-        table.addContainerProperty("Sesión 1", String.class, null);
-        table.addContainerProperty("Sesión 2", String.class, null);
-        table.addContainerProperty("Sesión 3", String.class, null);
+        table.addContainerProperty("Sesión", String.class, null);
+        
 
         table.setSelectable(true); //Para poder seleccionar los registros
         table.setSizeFull();
@@ -122,7 +121,7 @@ public class SesionUI extends UI {
         // recorre la lista y si lo encuentra, sale del bucle
         while (cursor.hasNext()) {
             pelicula = cursor.next();
-            tableP.addItem(new Object[]{pelicula.get("name"), pelicula.get("numSala"), "16:00", " 18:00", "20:00"}, tableP.getItemIds().size() + 1);
+            tableP.addItem(new Object[]{pelicula.get("name"), pelicula.get("numSala"), "16:00"}, tableP.getItemIds().size() + 1);
 
         }
 
