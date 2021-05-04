@@ -44,6 +44,7 @@ public class Navegacion extends CustomComponent {
         
         hLayout.addComponents(btnInicio, 
                 //btnCartelera,
+                
                 btnPerfil);
         hLayout.setMargin(true);
         hLayout.setSpacing(true);
