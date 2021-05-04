@@ -25,10 +25,7 @@ import java.util.logging.Logger;
 import javax.servlet.annotation.WebServlet;
 
 @Theme("mytheme")
-<<<<<<< HEAD
 
-=======
->>>>>>> main
 public class SesionUI extends UI {
 
     public static WrappedSession session = null; //Definimos el elemento de sesión
