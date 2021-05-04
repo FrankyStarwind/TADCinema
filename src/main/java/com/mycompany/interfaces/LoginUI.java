@@ -70,6 +70,7 @@ public class LoginUI extends UI {
                     DB db = mongoClient.getDB("TADCinemaDB");
                     if (existeUsuario(username, password, db)) {
                         session.setAttribute("usuario", username.getValue());
+                        
                         Page.getCurrent().setLocation("/home");
                     }
                 } catch (UnknownHostException ex) {
@@ -110,10 +111,11 @@ public class LoginUI extends UI {
      * @param db base de datos
      * @return TRUE/FALSE
      */
+//    WrappedSession session = getSession().getSession();
     public static boolean existeUsuario(TextField username, PasswordField password,
             DB db) {
         boolean existe = false;
-
+        
         // obtengo la colección de los usuarios
         DBCollection usuarios = db.getCollection("usuarios");
 
@@ -127,6 +129,7 @@ public class LoginUI extends UI {
             if (usuario.get("username").equals(username.getValue())) {
                 if (usuario.get("contraseña").equals(password.getValue())) {
                     existe = true;
+//                    session.setAttribute("rol",usuario.get("rol"));
                     break;
                 } else {
                     Notification.show("Error", "Contraseña no válida", Notification.Type.ERROR_MESSAGE);
