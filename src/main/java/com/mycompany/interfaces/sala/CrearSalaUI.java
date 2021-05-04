@@ -1,9 +1,10 @@
-package com.mycompany.interfaces;
+package com.mycompany.interfaces.sala;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mycompany.components.Navegacion;
+import com.mycompany.utils.BBDD;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Page;
@@ -80,17 +81,17 @@ public class CrearSalaUI extends UI {
         btnCrear.addClickListener(e -> {
             if(validarCampos(numero, capacidad, tipoSala)) {
                 try {
-                    BBDD bbdd = new BBDD("salas");
+                    final BBDD bbdd = new BBDD("salas");
                     
-                    DBCollection salas = bbdd.getColeccion();
+                    final DBCollection salas = bbdd.getColeccion();
                     
-                    BasicDBObject sala = new BasicDBObject();
+                    final BasicDBObject sala = new BasicDBObject();
                     sala.append("numero", numero.getValue());
                     sala.append("capacidad", capacidad.getValue());
                     sala.append("tipo", tipoSala.getValue());
                     
-                    DBObject query = new BasicDBObject().append("numero", numero.getValue());
-                    DBObject data = salas.findOne(query);
+                    final DBObject query = new BasicDBObject().append("numero", numero.getValue());
+                    final DBObject data = salas.findOne(query);
                     
                     if (data == null) {
                         salas.insert(sala);
@@ -137,7 +138,7 @@ public class CrearSalaUI extends UI {
      * @return Listado de números del 1 al 12
      */
     private static List<String> comboNumeros() {
-        List<String> numeros = new ArrayList<>();
+        final List<String> numeros = new ArrayList<>();
         for (int i = 1; i <= 12; i++) {
             numeros.add(String.valueOf(i));
         }
@@ -149,7 +150,7 @@ public class CrearSalaUI extends UI {
      * @return Listado de tipos de sala
      */
     private static List<String> comboTipos() {
-        List<String> tipos = new ArrayList<>();
+        final List<String> tipos = new ArrayList<>();
         tipos.add("Predeterminada");
         tipos.add("3D");
         tipos.add("iMax");

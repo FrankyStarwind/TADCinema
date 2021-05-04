@@ -1,4 +1,4 @@
-package com.mycompany.interfaces;
+package com.mycompany.interfaces.usuario;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;

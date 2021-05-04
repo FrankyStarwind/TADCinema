@@ -1,5 +1,6 @@
 package com.mycompany.interfaces;
 
+import com.mycompany.utils.BBDD;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;

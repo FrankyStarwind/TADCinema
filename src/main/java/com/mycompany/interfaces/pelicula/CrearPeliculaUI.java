@@ -1,9 +1,10 @@
-package com.mycompany.interfaces;
+package com.mycompany.interfaces.pelicula;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mycompany.components.Navegacion;
+import com.mycompany.utils.BBDD;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Page;

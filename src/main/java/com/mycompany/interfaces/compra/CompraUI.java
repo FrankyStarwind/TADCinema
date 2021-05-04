@@ -1,4 +1,4 @@
-package com.mycompany.interfaces;
+package com.mycompany.interfaces.compra;
 
 import com.mycompany.components.Navegacion;
 import com.vaadin.annotations.Theme;

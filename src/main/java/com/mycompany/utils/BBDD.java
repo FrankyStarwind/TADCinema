@@ -1,4 +1,4 @@
-package com.mycompany.interfaces;
+package com.mycompany.utils;
 
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
