@@ -3,7 +3,6 @@ package com.mycompany.interfaces;
 import com.mycompany.components.Navegacion;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
@@ -11,10 +10,9 @@ import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WrappedSession;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import java.io.File;
@@ -27,6 +25,9 @@ public class SalaUI extends UI {
 
     public String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
 
+    public static List<Integer> filas = new ArrayList<Integer>();
+    public static List<Integer> asientos= new ArrayList<Integer>();
+    
     @Override
     protected void init(VaadinRequest request) {
         final WrappedSession session = getSession().getSession();
@@ -51,38 +52,20 @@ public class SalaUI extends UI {
         // panel de navegación
         final Navegacion navbar = new Navegacion();
 
-        final Table tablePeliculas = new Table();
-        definirCabeceraTabla(tablePeliculas);
+        rellenarAsientos(9, 14);
+        final ComboBox comboFilas = new ComboBox("Fila", filas);
+        comboFilas.setRequired(true);
+        comboFilas.setInputPrompt("Selecciona la fila");
         
-        List<Button> botonesCompra= new ArrayList<Button>();
-        
-        for (int i = 0; i < 10; i++) {
-            Button b= new Button("Comprar");
-            botonesCompra.add(b);
-            tablePeliculas.addItem(new Object[]{i+1,i+1,"Libre",b},i+1 );
-        }
-        for (int i = 0; i < botonesCompra.size(); i++) {
-            botonesCompra.get(i).addClickListener(e->{
-                Notification.show("Comprando la entrada!",
-                    Notification.Type.HUMANIZED_MESSAGE);
-            });
-        }
-        tablePeliculas.addItemClickListener(
-                new ItemClickEvent.ItemClickListener() {
-            @Override
-            public void itemClick(ItemClickEvent event) {
-                String nomPeli=event.getItem().getItemProperty("Pelicula").getValue().toString();
-                session.setAttribute("sessionNombrePelicula", nomPeli);
-                Notification.show("Entrando en las sesiones de "+nomPeli, "Entrando, espere por favor",
-                    Notification.Type.HUMANIZED_MESSAGE);
-                //Page.getCurrent().setLocation("/"+"session");
-            }
-            
-        });
+        final ComboBox comboAsientos = new ComboBox("Tipo de asiento", asientos);
+        comboAsientos.setRequired(true);
+        comboAsientos.setInputPrompt("Selecciona el asiento");
+  
         
         final Image image = new Image(null, new FileResource(new File(basepath + "/WEB-INF/images/sala.JPG")));
         
-        rootLayout.addComponents(btnLogout, navbar, nomPeli,image, tablePeliculas);
+        rootLayout.addComponents(btnLogout, 
+                navbar, nomPeli,image,comboFilas,comboAsientos);
         rootLayout.setMargin(true);
         rootLayout.setSpacing(true);
 
@@ -107,14 +90,17 @@ public class SalaUI extends UI {
         }
     }
     
-    public void definirCabeceraTabla(Table table) {
-        table.addContainerProperty("Fila", Integer.class, null);
-        table.addContainerProperty("Asiento", Integer.class, null);
-        table.addContainerProperty("Ocupada", String.class, null);
-        table.addContainerProperty("Comprar?", Button.class, null);//boton
-
-        //table.setSelectable(true); //Para poder seleccionar los registros
-        table.setSizeFull();
+    //Rellenado por filas y asientos
+    public static void rellenarAsientos(int numFilas, int numAsientos){
+        
+        for (int i = 0; i < numAsientos; i++) {
+            asientos.add(i+1);
+        }
+        for (int i = 0; i < numFilas; i++) {
+            filas.add(i+1);
+        }
+        
     }
+    
     
 }
