@@ -29,22 +29,25 @@ public class Navegacion extends CustomComponent {
             Page.getCurrent().setLocation("/home");
         });
         
-        
-        
         btnPerfil.addClickListener(e -> {
             Page.getCurrent().setLocation("/perfil");
         });
         
         hLayout.addComponents(btnInicio, btnPerfil);
-        String rolName=session.getAttribute("rol").toString();
+        final String rolName = session.getAttribute("rol").toString();
         
         //Si es admin muestra botones con funcionalidades mejoradas
         if(rolName.equals("admin")){
-            final Button bPelis = new Button("Peliculas");
-            final Button bSesiones = new Button("Sesiones");
-            final Button bSalas = new Button("Salas");
-            final Button bCompras = new Button("Compras");
-            hLayout.addComponents(bPelis, bSesiones, bSalas,bCompras);
+            final Button btnPelis = new Button("Peliculas");
+            final Button btnSesiones = new Button("Sesiones");
+            final Button btnSalas = new Button("Salas");
+            final Button btnAsientos = new Button("Asientos");
+            final Button btnCompras = new Button("Compras");
+            hLayout.addComponents(btnPelis, btnSesiones, btnSalas, btnAsientos, btnCompras);
+            
+            btnAsientos.addClickListener(e -> {
+                Page.getCurrent().setLocation("/asientos");
+            });
         }
         
         hLayout.setMargin(true);

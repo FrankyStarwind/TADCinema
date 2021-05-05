@@ -1,15 +1,13 @@
 package com.mycompany.interfaces;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
 import com.mycompany.components.Navegacion;
+import com.mycompany.utils.BBDD;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
@@ -17,8 +15,6 @@ import com.vaadin.server.WrappedSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import java.net.UnknownHostException;
@@ -50,18 +46,10 @@ public class SesionUI extends UI {
         // panel de navegación
         final Navegacion navbar = new Navegacion();
 
-        MongoClient mongoClient = null;
-        try {
-            mongoClient = new MongoClient("localhost", 27017);
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(SesionUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        DB db = mongoClient.getDB("TADCinemaDB");
-
         Label pelicula = new Label("Sesiones de " + session.getAttribute("nombrePeli").toString());
         rootLayout.addComponents(btnLogout, navbar, pelicula, horarios);
         horarios.setSpacing(true);
-        mostrarSesiones(horarios, db, session);
+        mostrarSesiones(horarios, session);
         rootLayout.setMargin(true);
         rootLayout.setSpacing(true);
 
@@ -86,16 +74,22 @@ public class SesionUI extends UI {
         }
     }
 
-    private static void mostrarSesiones(HorizontalLayout layout, DB db, WrappedSession session) {
+    private static void mostrarSesiones(HorizontalLayout layout, WrappedSession session) {
+        // obtengo la colección de los sesiones
+        BBDD bbdd = null;
+        try {
+            bbdd = new BBDD("sesiones");
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(SesionUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        DBCollection sesiones = bbdd.getColeccion();
 
-        // obtengo la colección de los usuarios
-        DBCollection sesiones = db.getCollection("sessions");
-
-        // cursor para iterar la lista de usuarios
+        // cursor para iterar la lista de sesiones
         String nomSesion = (String) session.getAttribute("nombrePeli");
 
         BasicDBObject whereQuery = new BasicDBObject();
-        whereQuery.put("movie", nomSesion);
+        whereQuery.put("pelicula", nomSesion);
 
         DBCursor cursor = sesiones.find(whereQuery);
 
@@ -113,7 +107,6 @@ public class SesionUI extends UI {
             });
             layout.addComponent(b);
         }
-
     }
 
 }
