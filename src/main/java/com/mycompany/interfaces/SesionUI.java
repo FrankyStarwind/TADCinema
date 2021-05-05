@@ -15,6 +15,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.WrappedSession;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
@@ -29,27 +30,26 @@ import javax.servlet.annotation.WebServlet;
 
 public class SesionUI extends UI {
 
-    public static WrappedSession session = null; //Definimos el elemento de sesión
-
     @Override
     protected void init(VaadinRequest request) {
+
         final WrappedSession session = getSession().getSession();
         final VerticalLayout rootLayout = new VerticalLayout();
         final Button btnLogout = new Button("Cerrar sesión");
-        
+
+        final HorizontalLayout horarios = new HorizontalLayout();
         // comprueba si se ha iniciado sesión
         comprobarSesion(rootLayout, session);
-        
+
         // invalida la sesion y redirecciona a login
         btnLogout.addClickListener(e -> {
             session.invalidate();
             Page.getCurrent().setLocation("/");
         });
-        
+
         // panel de navegación
         final Navegacion navbar = new Navegacion();
-        
-        
+
         MongoClient mongoClient = null;
         try {
             mongoClient = new MongoClient("localhost", 27017);
@@ -57,13 +57,11 @@ public class SesionUI extends UI {
             Logger.getLogger(SesionUI.class.getName()).log(Level.SEVERE, null, ex);
         }
         DB db = mongoClient.getDB("TADCinemaDB");
-        
 
-        
-        
-        Label pelicula = new Label("Sesiones de "+session.getAttribute("nombrePeli").toString());
-        rootLayout.addComponents(btnLogout, navbar,pelicula);
-        mostrarSesiones(rootLayout,db);
+        Label pelicula = new Label("Sesiones de " + session.getAttribute("nombrePeli").toString());
+        rootLayout.addComponents(btnLogout, navbar, pelicula, horarios);
+        horarios.setSpacing(true);
+        mostrarSesiones(horarios, db, session);
         rootLayout.setMargin(true);
         rootLayout.setSpacing(true);
 
@@ -74,13 +72,13 @@ public class SesionUI extends UI {
     @VaadinServletConfiguration(ui = SesionUI.class, productionMode = false)
     public static class CarteleraUIServlet extends VaadinServlet {
     }
-    
+
     /**
-     * Método encargado de comprobar si la sesión existe o no
-     * Si no existe, redirecciona al login
+     * Método encargado de comprobar si la sesión existe o no Si no existe,
+     * redirecciona al login
      */
     private static void comprobarSesion(final VerticalLayout rootLayout, final WrappedSession session) {
-        if(session.getAttribute("usuario") == null){
+        if (session.getAttribute("usuario") == null) {
             Page.getCurrent().setLocation("/");
         } else {
             final Label bienvenido = new Label("Bienvenido, " + session.getAttribute("usuario"));
@@ -88,31 +86,34 @@ public class SesionUI extends UI {
         }
     }
 
+    private static void mostrarSesiones(HorizontalLayout layout, DB db, WrappedSession session) {
 
-    public static void mostrarSesiones(VerticalLayout layout,DB db) {
-        
         // obtengo la colección de los usuarios
         DBCollection sesiones = db.getCollection("sessions");
-//
-//                BasicDBObject ref=new BasicDBObject()
-//                .append("movie",session.getAttribute("nombrePeli").toString());
-        // cursor para iterar la lista de usuarios
-        final DBCursor cursor = sesiones.find();
 
-        
+        // cursor para iterar la lista de usuarios
+        String nomSesion = (String) session.getAttribute("nombrePeli");
+
+        BasicDBObject whereQuery = new BasicDBObject();
+        whereQuery.put("movie", nomSesion);
+
+        DBCursor cursor = sesiones.find(whereQuery);
 
         DBObject sesion;
         // recorre la lista y si lo encuentra, sale del bucle
         while (cursor.hasNext()) {
             sesion = cursor.next();
-            
-            Button b = new Button(sesion.get("hora").toString());
-            b.addClickListener(e->{
-                Notification.show(DESIGN_ATTR_PLAIN_TEXT, DESIGN_ATTR_PLAIN_TEXT, Notification.Type.ERROR_MESSAGE);
+
+            String hora=sesion.get("hora").toString();
+            Button b = new Button(hora);
+            b.addClickListener(e -> {
+                //Metemos la hora
+                session.setAttribute("hora", hora);
+                Page.getCurrent().setLocation("/sala");
             });
             layout.addComponent(b);
         }
 
     }
-    
+
 }

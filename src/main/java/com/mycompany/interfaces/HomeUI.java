@@ -73,6 +73,7 @@ public class HomeUI extends UI {
                             c.getCaption(), Notification.Type.HUMANIZED_MESSAGE);
                     session.setAttribute("nombrePeli",c.getCaption());
                     Page.getCurrent().setLocation("/sessionMovie");
+                    //System.out.println(session.getAttribute("nombrePeli"));
                 }
                 );
             }

@@ -33,10 +33,12 @@ public class SalaUI extends UI {
         final VerticalLayout rootLayout = new VerticalLayout();
         final Button btnLogout = new Button("Cerrar sesión");
         
-        String s =session.getAttribute("nombrePeli").toString();
-        final Label nomPeli = new Label(s);
+        String nombreSesion =session.getAttribute("nombrePeli").toString();
+        String sesHora =session.getAttribute("hora").toString();
         
-        nomPeli.setCaption(s);
+        final Label nomPeli = new Label(nombreSesion+" "+sesHora);
+        
+        nomPeli.setCaption(nombreSesion);
         // comprueba si se ha iniciado sesión
         comprobarSesion(rootLayout, session);
         
@@ -87,7 +89,7 @@ public class SalaUI extends UI {
         setContent(rootLayout);
     }
 
-    @WebServlet(urlPatterns = "/session/*", name = "SalaUIServlet", asyncSupported = true)
+    @WebServlet(urlPatterns = "/sala/*", name = "SalaUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = SalaUI.class, productionMode = false)
     public static class SalaUIServlet extends VaadinServlet {
     }
