@@ -1,10 +1,5 @@
 package com.mycompany.components;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
 import com.mycompany.interfaces.HomeUI;
 import com.vaadin.server.Page;
 import com.vaadin.server.WrappedSession;
@@ -12,7 +7,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
-import java.net.UnknownHostException;
 
 public class Navegacion extends CustomComponent {
 
