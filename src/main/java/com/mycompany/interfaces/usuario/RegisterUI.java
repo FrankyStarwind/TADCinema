@@ -101,6 +101,7 @@ public class RegisterUI extends UI {
                         usuario.append("correo", correo.getValue());
                         usuario.append("username", username.getValue());
                         usuario.append("contraseña", password.getValue());
+                        usuario.append("rol", "cliente");
 
                         // Obtengo la colección de los usuarios
                         DBCollection usuarios = db.getCollection("usuarios");
