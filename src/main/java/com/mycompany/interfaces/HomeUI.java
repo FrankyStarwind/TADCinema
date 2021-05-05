@@ -68,9 +68,9 @@ public class HomeUI extends UI {
             Component c = layout.getComponent(i);
             if(c instanceof Panel){
                 ((Panel) c).addClickListener(e->{
-                    
-                    Notification.show("Accediendo a la sesion",
-                            c.getCaption(), Notification.Type.HUMANIZED_MESSAGE);
+//                    
+//                    Notification.show("Accediendo a la sesion",
+//                            c.getCaption(), Notification.Type.HUMANIZED_MESSAGE);
                     session.setAttribute("nombrePeli",c.getCaption());
                     Page.getCurrent().setLocation("/sessionMovie");
                     //System.out.println(session.getAttribute("nombrePeli"));

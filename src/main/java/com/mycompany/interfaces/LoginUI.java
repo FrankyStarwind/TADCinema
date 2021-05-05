@@ -1,5 +1,6 @@
 package com.mycompany.interfaces;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -68,9 +69,12 @@ public class LoginUI extends UI {
                 try {
                     mongoClient = new MongoClient("localhost", 27017);
                     DB db = mongoClient.getDB("TADCinemaDB");
-                    if (existeUsuario(username, password, db)) {
+                    // obtengo la colección de los usuarios
+                    
+                    
+                    if (existeUsuario(username, password, db, session)) {
                         session.setAttribute("usuario", username.getValue());
-                        
+
                         Page.getCurrent().setLocation("/home");
                     }
                 } catch (UnknownHostException ex) {
@@ -78,7 +82,7 @@ public class LoginUI extends UI {
                 }
             }
         });
-        
+
         // redireccion a registro al pulsar el boton
         btnRegister.addClickListener(e -> {
             Page.getCurrent().setLocation("/registro");
@@ -88,7 +92,7 @@ public class LoginUI extends UI {
         form.addComponents(username, password, divButtons);
         form.setSpacing(true);
         form.setMargin(true);
-        
+
         loginPanel.setContent(form);
         loginPanel.setWidth("440px");
 
@@ -106,16 +110,18 @@ public class LoginUI extends UI {
 
     /**
      * Método encargado de comprobar si existe el usuario en base de datos
+     *
      * @param username nombre de usuario
      * @param password contraseña
      * @param db base de datos
+     * @param session
      * @return TRUE/FALSE
      */
 //    WrappedSession session = getSession().getSession();
     public static boolean existeUsuario(TextField username, PasswordField password,
-            DB db) {
+            DB db, WrappedSession session) {
         boolean existe = false;
-        
+
         // obtengo la colección de los usuarios
         DBCollection usuarios = db.getCollection("usuarios");
 
@@ -129,7 +135,7 @@ public class LoginUI extends UI {
             if (usuario.get("username").equals(username.getValue())) {
                 if (usuario.get("contraseña").equals(password.getValue())) {
                     existe = true;
-//                    session.setAttribute("rol",usuario.get("rol"));
+                    session.setAttribute("rol",usuario.get("rol"));
                     break;
                 } else {
                     Notification.show("Error", "Contraseña no válida", Notification.Type.ERROR_MESSAGE);
@@ -145,6 +151,7 @@ public class LoginUI extends UI {
 
     /**
      * Método encargado de comprobar que los campos sean válidos
+     *
      * @param username campo de usuario
      * @param password campo de contraseña
      * @return TRUE/FALSE
