@@ -7,6 +7,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
+import java.util.Objects;
 
 public class Navegacion extends CustomComponent {
 
@@ -34,7 +35,11 @@ public class Navegacion extends CustomComponent {
         });
         
         hLayout.addComponents(btnInicio, btnPerfil);
-        final String rolName = session.getAttribute("rol").toString();
+        
+        String rolName = "";
+        if (Objects.nonNull(session.getAttribute("rol"))) {
+            rolName = session.getAttribute("rol").toString();
+        }
         
         //Si es admin muestra botones con funcionalidades mejoradas
         if(rolName.equals("admin")){

@@ -58,7 +58,7 @@ public class AsientosUI extends UI {
 
         // panel de navegación
         final Navegacion navbar = new Navegacion();
-        
+
         // botón crear asiento (redirige a la ui determinada)
         final HorizontalLayout botoneraCrear = new HorizontalLayout();
         final Button btnCrear = new Button("Crear asiento");
@@ -196,16 +196,19 @@ public class AsientosUI extends UI {
         btnConfirmar.addClickListener(e -> {
             // Obtengo el asiento
             DBObject asiento = asientos.findOne(new BasicDBObject().append("_id", id.getValue()));
-            // Elimino el asiento
-            asientos.remove(asiento);
-            
-            // actualizo tabla y elimino ventana
-            actualizarTabla(tablaAsientos);
-            removeWindow(ventanaConfirmacion);
-            
-            Notification.show("El registro se ha eliminado correctamente", Notification.Type.TRAY_NOTIFICATION);
+
+            if (Objects.nonNull(asiento)) {
+                // Elimino el asiento
+                asientos.remove(asiento);
+
+                // actualizo tabla y elimino ventana
+                actualizarTabla(tablaAsientos);
+                removeWindow(ventanaConfirmacion);
+
+                Notification.show("El registro se ha eliminado correctamente", Notification.Type.TRAY_NOTIFICATION);
+            }
         });
-        
+
         // al pulsar el botón de cancelar
         btnCancelar.addClickListener(e -> {
             removeWindow(ventanaConfirmacion);
@@ -279,18 +282,19 @@ public class AsientosUI extends UI {
         tabla.sort(properties, ordering);
         return tabla;
     }
-    
+
     /**
      * Método encargado de actualizar la tabla de asientos
+     *
      * @param tabla Tabla de asientos
      */
     private static void actualizarTabla(Table tabla) {
         tabla.removeAllItems();
         listadoId.clear();
         final DBCursor cursor = asientos.find();
-        
+
         DBObject asiento = null;
-        while(cursor.hasNext()) {
+        while (cursor.hasNext()) {
             asiento = cursor.next();
             String id = asiento.get("_id").toString();
             String tipo = asiento.get("tipo").toString();
@@ -299,7 +303,7 @@ public class AsientosUI extends UI {
             tabla.addItem(new Object[]{id, tipo, fila, numero}, id);
             listadoId.add(id);
         }
-        
+
         Object[] properties = {"ID"};
         boolean[] ordering = {true};
         tabla.sort(properties, ordering);

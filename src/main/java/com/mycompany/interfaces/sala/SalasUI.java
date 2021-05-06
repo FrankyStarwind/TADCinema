@@ -37,7 +37,7 @@ import javax.servlet.annotation.WebServlet;
 
 @Theme("mytheme")
 public class SalasUI extends UI {
-    
+
     public static List<Integer> listadoId = new ArrayList<>();
     public static DBCollection salas = null;
 
@@ -59,7 +59,7 @@ public class SalasUI extends UI {
 
         // panel de navegación
         final Navegacion navbar = new Navegacion();
-        
+
         // botón crear sala (redirige a la ui determinada)
         final HorizontalLayout botoneraCrear = new HorizontalLayout();
         final Button btnCrear = new Button("Crear sala");
@@ -116,7 +116,7 @@ public class SalasUI extends UI {
             @Override
             public void itemClick(ItemClickEvent event) {
                 final DBCursor cursor = salas.find();
-                
+
                 DBObject sala = null;
                 while (cursor.hasNext()) {
                     sala = cursor.next();
@@ -146,7 +146,7 @@ public class SalasUI extends UI {
                 salaUpdate.put("$set", sala);
                 // buscar por número
                 BasicDBObject buscarPorId = new BasicDBObject();
-                buscarPorId.append("_id", numero.getValue());
+                buscarPorId.append("_id", numero.getValue().toString());
                 // actualiza el elemento por número
                 salas.update(buscarPorId, salaUpdate);
                 Notification.show("Los datos se han modificado correctamente.", Notification.Type.TRAY_NOTIFICATION);
@@ -190,22 +190,25 @@ public class SalasUI extends UI {
         // al pulsar el botón de confirmar eliminación
         btnConfirmar.addClickListener(e -> {
             // Obtengo la sala
-            DBObject sala = salas.findOne(new BasicDBObject().append("_id", numero.getValue()));
-            // Elimino la sala
-            salas.remove(sala);
-            
-            // actualizo tabla y elimino ventana
-            actualizarTabla(tablaSalas);
-            removeWindow(ventanaConfirmacion);
-            
-            Notification.show("El registro se ha eliminado correctamente", Notification.Type.TRAY_NOTIFICATION);
+            DBObject sala = salas.findOne(new BasicDBObject().append("_id", numero.getValue().toString()));
+
+            if (Objects.nonNull(sala)) {
+                // Elimino la sala
+                salas.remove(sala);
+
+                // actualizo tabla y elimino ventana
+                actualizarTabla(tablaSalas);
+                removeWindow(ventanaConfirmacion);
+
+                Notification.show("El registro se ha eliminado correctamente", Notification.Type.TRAY_NOTIFICATION);
+            }
         });
-        
+
         // al pulsar el botón de cancelar
         btnCancelar.addClickListener(e -> {
             removeWindow(ventanaConfirmacion);
         });
-        
+
         // ESTRUCTURA DE LA INTERFAZ
         rootLayout.addComponents(btnLogout, navbar, botoneraCrear, grid);
 
@@ -214,12 +217,12 @@ public class SalasUI extends UI {
 
         setContent(rootLayout);
     }
-    
+
     @WebServlet(urlPatterns = "/salas/*", name = "SalasUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = SalasUI.class, productionMode = false)
     public static class SalasUIServlet extends VaadinServlet {
     }
-    
+
     /**
      * Método encargado de comprobar si la sesión existe o no Si no existe,
      * redirecciona al login
@@ -232,10 +235,10 @@ public class SalasUI extends UI {
             rootLayout.addComponent(bienvenido);
         }
     }
-    
+
     /**
-     * Método encargado de obtener la lista de salas, crear una tabla
-     * con ella y devolverla
+     * Método encargado de obtener la lista de salas, crear una tabla con ella y
+     * devolverla
      *
      * @return Tabla de salas
      */
@@ -272,18 +275,19 @@ public class SalasUI extends UI {
         tabla.sort(properties, ordering);
         return tabla;
     }
-    
+
     /**
      * Método encargado de actualizar la tabla de salas
+     *
      * @param tabla Tabla de salas
      */
     private static void actualizarTabla(Table tabla) {
         tabla.removeAllItems();
         listadoId.clear();
         final DBCursor cursor = salas.find();
-        
+
         DBObject sala = null;
-        while(cursor.hasNext()) {
+        while (cursor.hasNext()) {
             sala = cursor.next();
             Integer numero = Integer.valueOf(sala.get("_id").toString());
             Integer capacidad = Integer.valueOf(sala.get("capacidad").toString());
@@ -291,7 +295,7 @@ public class SalasUI extends UI {
             tabla.addItem(new Object[]{numero, capacidad, tipo}, numero);
             listadoId.add(numero);
         }
-        
+
         Object[] properties = {"Número"};
         boolean[] ordering = {true};
         tabla.sort(properties, ordering);
@@ -312,6 +316,7 @@ public class SalasUI extends UI {
 
     /**
      * Método encargado de resetear los campos del formulario
+     *
      * @param numero Número de sala
      * @param capacidad Capacidad máxima de asientos
      * @param tipo Tipo de sala
@@ -321,5 +326,5 @@ public class SalasUI extends UI {
         capacidad.setValue("");
         tipo.setValue(null);
     }
-    
+
 }
