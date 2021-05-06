@@ -1,10 +1,11 @@
-package com.mycompany.interfaces.asiento;
+package com.mycompany.interfaces.sala;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mycompany.components.Navegacion;
+import com.mycompany.interfaces.asiento.AsientosUI;
 import com.mycompany.utils.BBDD;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -35,10 +36,10 @@ import java.util.logging.Logger;
 import javax.servlet.annotation.WebServlet;
 
 @Theme("mytheme")
-public class AsientosUI extends UI {
-
-    private static List<String> listadoId = new ArrayList<>();
-    private static DBCollection asientos = null;
+public class SalasUI extends UI {
+    
+    public static List<Integer> listadoId = new ArrayList<>();
+    public static DBCollection salas = null;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -59,20 +60,20 @@ public class AsientosUI extends UI {
         // panel de navegación
         final Navegacion navbar = new Navegacion();
         
-        // botón crear asiento (redirige a la ui determinada)
+        // botón crear sala (redirige a la ui determinada)
         final HorizontalLayout botoneraCrear = new HorizontalLayout();
-        final Button btnCrear = new Button("Crear asiento");
+        final Button btnCrear = new Button("Crear sala");
         botoneraCrear.addComponent(btnCrear);
         // al pulsar el botón de crear
         btnCrear.addClickListener(e -> {
-            Page.getCurrent().setLocation("/crear-asiento");
+            Page.getCurrent().setLocation("/crear-sala");
         });
 
-        // tabla de asientos
-        final Table tablaAsientos = obtenerTabla();
+        // tabla de salas
+        final Table tablaSalas = obtenerTabla();
 
         // panel de edición
-        final Panel panelEdit = new Panel("Gestión del asiento");
+        final Panel panelEdit = new Panel("Gestión de la sala");
         final VerticalLayout vLayout = new VerticalLayout();
         final Label info = new Label("Para facilitar la edición, puedes seleccionar"
                 + " un registro de la tabla y luego editarlo.");
@@ -80,15 +81,13 @@ public class AsientosUI extends UI {
         // formulario edición
         final FormLayout form = new FormLayout();
 
-        final ComboBox id = new ComboBox("Identificador", listadoId);
-        id.setRequired(true);
-        id.setInputPrompt("Selecciona el ID");
-        final ComboBox tipo = new ComboBox("Tipo de asiento", comboTipos());
+        final ComboBox numero = new ComboBox("Número de sala", listadoId);
+        numero.setRequired(true);
+        numero.setInputPrompt("Selecciona la sala");
+        final TextField capacidad = new TextField("Fila asiento");
+        capacidad.setInputPrompt("Introduce la fila");
+        final ComboBox tipo = new ComboBox("Tipo de sala", comboTipos());
         tipo.setInputPrompt("Selecciona tipo");
-        final TextField fila = new TextField("Fila asiento");
-        fila.setInputPrompt("Introduce la fila");
-        final TextField numero = new TextField("Número de asiento");
-        numero.setInputPrompt("Introduce el número");
         final Button btnEditar = new Button("Modificar");
         btnEditar.setStyleName("primary");
         final Button btnEliminar = new Button("Eliminar");
@@ -98,7 +97,7 @@ public class AsientosUI extends UI {
         hLayout.addComponents(btnEditar, btnEliminar);
         hLayout.setSpacing(true);
 
-        form.addComponents(id, tipo, fila, numero, hLayout);
+        form.addComponents(numero, capacidad, tipo, hLayout);
         form.setMargin(true);
 
         vLayout.addComponents(info, form);
@@ -106,26 +105,25 @@ public class AsientosUI extends UI {
         panelEdit.setContent(vLayout);
 
         // Estructura del grid
-        grid.addComponent(tablaAsientos, 0, 0);
+        grid.addComponent(tablaSalas, 0, 0);
         grid.addComponent(panelEdit, 1, 0);
         grid.setSizeFull();
         grid.setSpacing(true);
 
         // si selecciona un registro de la tabla
         // se añaden los datos al formulario
-        tablaAsientos.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+        tablaSalas.addItemClickListener(new ItemClickEvent.ItemClickListener() {
             @Override
             public void itemClick(ItemClickEvent event) {
-                final DBCursor cursor = asientos.find();
-
-                DBObject asiento = null;
+                final DBCursor cursor = salas.find();
+                
+                DBObject sala = null;
                 while (cursor.hasNext()) {
-                    asiento = cursor.next();
-                    if (asiento.get("_id").equals(event.getItemId())) {
-                        id.setValue(asiento.get("_id"));
-                        tipo.setValue(asiento.get("tipo"));
-                        fila.setValue(asiento.get("fila").toString());
-                        numero.setValue(asiento.get("numero").toString());
+                    sala = cursor.next();
+                    if (sala.get("_id").equals(event.getItemId().toString())) {
+                        numero.setValue(event.getItemId());
+                        capacidad.setValue(sala.get("capacidad").toString());
+                        tipo.setValue(sala.get("tipo"));
                         break;
                     }
                 }
@@ -134,35 +132,32 @@ public class AsientosUI extends UI {
 
         // al pulsar el botón de editar
         btnEditar.addClickListener(e -> {
-            if (Objects.nonNull(id.getValue()) && (Objects.nonNull(tipo.getValue()) || !fila.getValue().equals("") || !numero.getValue().equals(""))) {
-                BasicDBObject asiento = new BasicDBObject();
+            if (Objects.nonNull(numero.getValue()) && (Objects.nonNull(tipo.getValue()) || !capacidad.getValue().equals(""))) {
+                BasicDBObject sala = new BasicDBObject();
+                if (!capacidad.getValue().equals("")) {
+                    sala.append("capacidad", capacidad.getValue());
+                }
                 if (tipo.getValue() != null) {
-                    asiento.append("tipo", tipo.getValue());
-                }
-                if (!fila.getValue().equals("")) {
-                    asiento.append("fila", fila.getValue());
-                }
-                if (!numero.getValue().equals("")) {
-                    asiento.append("numero", numero.getValue());
+                    sala.append("tipo", tipo.getValue());
                 }
 
-                // asiento a actualizar
-                BasicDBObject asientoUpdate = new BasicDBObject();
-                asientoUpdate.put("$set", asiento);
-                // buscar por id
+                // sala a actualizar
+                BasicDBObject salaUpdate = new BasicDBObject();
+                salaUpdate.put("$set", sala);
+                // buscar por número
                 BasicDBObject buscarPorId = new BasicDBObject();
-                buscarPorId.append("_id", id.getValue());
-                // actualiza el elemento por id
-                asientos.update(buscarPorId, asientoUpdate);
+                buscarPorId.append("_id", numero.getValue());
+                // actualiza el elemento por número
+                salas.update(buscarPorId, salaUpdate);
                 Notification.show("Los datos se han modificado correctamente.", Notification.Type.TRAY_NOTIFICATION);
                 // limpiar campos
-                resetarCampos(id, tipo, fila, numero);
+                resetarCampos(numero, capacidad, tipo);
                 // actualizamos la tabla
-                actualizarTabla(tablaAsientos);
-            } else if (Objects.nonNull(id.getValue())) {
+                actualizarTabla(tablaSalas);
+            } else if (Objects.nonNull(numero.getValue())) {
                 Notification.show("Debes rellenar algún campo más.", Notification.Type.ERROR_MESSAGE);
             } else {
-                Notification.show("El campo 'Identificador' es obligatorio.", Notification.Type.ERROR_MESSAGE);
+                Notification.show("El campo 'Número de sala' es obligatorio.", Notification.Type.ERROR_MESSAGE);
             }
         });
 
@@ -185,22 +180,22 @@ public class AsientosUI extends UI {
 
         // al pulsar el botón de eliminar
         btnEliminar.addClickListener(e -> {
-            if (Objects.nonNull(id.getValue())) {
+            if (Objects.nonNull(numero.getValue())) {
                 addWindow(ventanaConfirmacion);
             } else {
-                Notification.show("Primero debes de seleccionar un identificador de asiento", Notification.Type.ERROR_MESSAGE);
+                Notification.show("Primero debes de seleccionar un número de sala", Notification.Type.ERROR_MESSAGE);
             }
         });
 
         // al pulsar el botón de confirmar eliminación
         btnConfirmar.addClickListener(e -> {
-            // Obtengo el asiento
-            DBObject asiento = asientos.findOne(new BasicDBObject().append("_id", id.getValue()));
-            // Elimino el asiento
-            asientos.remove(asiento);
+            // Obtengo la sala
+            DBObject sala = salas.findOne(new BasicDBObject().append("_id", numero.getValue()));
+            // Elimino la sala
+            salas.remove(sala);
             
             // actualizo tabla y elimino ventana
-            actualizarTabla(tablaAsientos);
+            actualizarTabla(tablaSalas);
             removeWindow(ventanaConfirmacion);
             
             Notification.show("El registro se ha eliminado correctamente", Notification.Type.TRAY_NOTIFICATION);
@@ -210,7 +205,7 @@ public class AsientosUI extends UI {
         btnCancelar.addClickListener(e -> {
             removeWindow(ventanaConfirmacion);
         });
-
+        
         // ESTRUCTURA DE LA INTERFAZ
         rootLayout.addComponents(btnLogout, navbar, botoneraCrear, grid);
 
@@ -219,12 +214,12 @@ public class AsientosUI extends UI {
 
         setContent(rootLayout);
     }
-
-    @WebServlet(urlPatterns = "/asientos/*", name = "AsientosUIServlet", asyncSupported = true)
-    @VaadinServletConfiguration(ui = AsientosUI.class, productionMode = false)
-    public static class AsientosUIServlet extends VaadinServlet {
+    
+    @WebServlet(urlPatterns = "/salas/*", name = "SalasUIServlet", asyncSupported = true)
+    @VaadinServletConfiguration(ui = SalasUI.class, productionMode = false)
+    public static class SalasUIServlet extends VaadinServlet {
     }
-
+    
     /**
      * Método encargado de comprobar si la sesión existe o no Si no existe,
      * redirecciona al login
@@ -237,100 +232,94 @@ public class AsientosUI extends UI {
             rootLayout.addComponent(bienvenido);
         }
     }
-
+    
     /**
-     * Método encargado de obtener la lista de asientos general, crear una tabla
+     * Método encargado de obtener la lista de salas, crear una tabla
      * con ella y devolverla
      *
-     * @return Tabla de asientos
+     * @return Tabla de salas
      */
     private static Table obtenerTabla() {
         final Table tabla = new Table();
-        tabla.addContainerProperty("ID", String.class, null);
-        tabla.addContainerProperty("Tipo", String.class, null);
-        tabla.addContainerProperty("Fila", Integer.class, null);
         tabla.addContainerProperty("Número", Integer.class, null);
+        tabla.addContainerProperty("Capacidad", Integer.class, null);
+        tabla.addContainerProperty("Tipo", String.class, null);
 
         BBDD bbdd = null;
         try {
-            bbdd = new BBDD("asientos");
+            bbdd = new BBDD("salas");
         } catch (UnknownHostException ex) {
             Logger.getLogger(AsientosUI.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        asientos = bbdd.getColeccion();
-        final DBCursor cursor = asientos.find();
+        salas = bbdd.getColeccion();
+        final DBCursor cursor = salas.find();
 
-        DBObject asiento = null;
+        DBObject sala = null;
         while (cursor.hasNext()) {
-            asiento = cursor.next();
-            String id = asiento.get("_id").toString();
-            String tipo = asiento.get("tipo").toString();
-            Integer fila = Integer.valueOf(asiento.get("fila").toString());
-            Integer numero = Integer.valueOf(asiento.get("numero").toString());
-            tabla.addItem(new Object[]{id, tipo, fila, numero}, id);
-            listadoId.add(id);
+            sala = cursor.next();
+            Integer numero = Integer.valueOf(sala.get("_id").toString());
+            Integer capacidad = Integer.valueOf(sala.get("capacidad").toString());
+            String tipo = sala.get("tipo").toString();
+            tabla.addItem(new Object[]{numero, capacidad, tipo}, numero);
+            listadoId.add(numero);
         }
 
         tabla.setSelectable(true);
         tabla.setSizeFull();
-        Object[] properties = {"ID"};
+        Object[] properties = {"Número"};
         boolean[] ordering = {true};
         tabla.sort(properties, ordering);
         return tabla;
     }
     
     /**
-     * Método encargado de actualizar la tabla de asientos
-     * @param tabla Tabla de asientos
+     * Método encargado de actualizar la tabla de salas
+     * @param tabla Tabla de salas
      */
     private static void actualizarTabla(Table tabla) {
         tabla.removeAllItems();
         listadoId.clear();
-        final DBCursor cursor = asientos.find();
+        final DBCursor cursor = salas.find();
         
-        DBObject asiento = null;
+        DBObject sala = null;
         while(cursor.hasNext()) {
-            asiento = cursor.next();
-            String id = asiento.get("_id").toString();
-            String tipo = asiento.get("tipo").toString();
-            Integer fila = Integer.valueOf(asiento.get("fila").toString());
-            Integer numero = Integer.valueOf(asiento.get("numero").toString());
-            tabla.addItem(new Object[]{id, tipo, fila, numero}, id);
-            listadoId.add(id);
+            sala = cursor.next();
+            Integer numero = Integer.valueOf(sala.get("_id").toString());
+            Integer capacidad = Integer.valueOf(sala.get("capacidad").toString());
+            String tipo = sala.get("tipo").toString();
+            tabla.addItem(new Object[]{numero, capacidad, tipo}, numero);
+            listadoId.add(numero);
         }
         
-        Object[] properties = {"ID"};
+        Object[] properties = {"Número"};
         boolean[] ordering = {true};
         tabla.sort(properties, ordering);
     }
 
     /**
-     * Método encargado de cargar el combo de tipo de asiento
+     * Método encargado de cargar el combo de tipo de sala
      *
-     * @return Listado de tipos de asiento
+     * @return Listado de tipos de sala
      */
     private static List<String> comboTipos() {
         List<String> tipos = new ArrayList<>();
-        tipos.add("Predeterminado");
-        tipos.add("Minusválidos");
-        tipos.add("Reclinable");
+        tipos.add("Predeterminada");
+        tipos.add("3D");
+        tipos.add("iMax");
         return tipos;
     }
 
     /**
      * Método encargado de resetear los campos del formulario
-     *
-     * @param id Identificador del asiento
-     * @param tipo Tipo de asiento
-     * @param fila Fila del asiento
-     * @param numero Número del asiento
+     * @param numero Número de sala
+     * @param capacidad Capacidad máxima de asientos
+     * @param tipo Tipo de sala
      */
-    private static void resetarCampos(ComboBox id, ComboBox tipo, TextField fila, TextField numero) {
-        id.setValue(null);
+    private static void resetarCampos(ComboBox numero, TextField capacidad, ComboBox tipo) {
+        numero.setValue(null);
+        capacidad.setValue("");
         tipo.setValue(null);
-        fila.setValue("");
-        numero.setValue("");
     }
-
+    
 }
