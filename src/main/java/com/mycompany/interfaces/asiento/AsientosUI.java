@@ -37,8 +37,8 @@ import javax.servlet.annotation.WebServlet;
 @Theme("mytheme")
 public class AsientosUI extends UI {
 
-    public static List<String> listadoId = new ArrayList<>();
-    public static DBCollection asientos = null;
+    private static List<String> listadoId = new ArrayList<>();
+    private static DBCollection asientos = null;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -134,7 +134,7 @@ public class AsientosUI extends UI {
 
         // al pulsar el botón de editar
         btnEditar.addClickListener(e -> {
-            if (Objects.nonNull(id.getValue())) {
+            if (Objects.nonNull(id.getValue()) && (Objects.nonNull(tipo.getValue()) || fila.getValue() != "" || numero.getValue() != "")) {
                 BasicDBObject asiento = new BasicDBObject();
                 if (tipo.getValue() != null) {
                     asiento.append("tipo", tipo.getValue());
@@ -159,8 +159,10 @@ public class AsientosUI extends UI {
                 resetarCampos(id, tipo, fila, numero);
                 // actualizamos la tabla
                 actualizarTabla(tablaAsientos);
+            } else if (Objects.nonNull(id.getValue())) {
+                Notification.show("Debes rellenar algún campo más.", Notification.Type.ERROR_MESSAGE);
             } else {
-                Notification.show("Error", "El campo 'Identificador' es obligatorio.", Notification.Type.ERROR_MESSAGE);
+                Notification.show("El campo 'Identificador' es obligatorio.", Notification.Type.ERROR_MESSAGE);
             }
         });
 
