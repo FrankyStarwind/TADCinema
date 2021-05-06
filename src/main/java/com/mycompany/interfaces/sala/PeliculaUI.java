@@ -133,7 +133,7 @@ public class PeliculaUI extends UI {
                 DBObject peliculas = null;
                 while (cursor.hasNext()) {
                     peliculas = cursor.next();
-                    if (peliculas.get("_id").equals(event.getItemId())) {
+                    if (peliculas.get("titulo").equals(event.getItemId())) {
                         String seleccion=peliculas.get("_id").toString();
                         idSelect=seleccion;
                         titulo.setValue(peliculas.get("titulo"));
