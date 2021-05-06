@@ -5,7 +5,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mycompany.components.Navegacion;
-import com.mycompany.interfaces.asiento.AsientosUI;
 import com.mycompany.utils.BBDD;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -29,6 +28,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -38,8 +38,8 @@ import javax.servlet.annotation.WebServlet;
 @Theme("mytheme")
 public class SalasUI extends UI {
 
-    public static List<Integer> listadoId = new ArrayList<>();
-    public static DBCollection salas = null;
+    private static List<Integer> listadoId = new ArrayList<>();
+    private static DBCollection salas = null;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -252,7 +252,7 @@ public class SalasUI extends UI {
         try {
             bbdd = new BBDD("salas");
         } catch (UnknownHostException ex) {
-            Logger.getLogger(AsientosUI.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalasUI.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         salas = bbdd.getColeccion();
@@ -267,6 +267,13 @@ public class SalasUI extends UI {
             tabla.addItem(new Object[]{numero, capacidad, tipo}, numero);
             listadoId.add(numero);
         }
+        
+        listadoId.sort(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o1.compareTo(o2);
+            }
+        });
 
         tabla.setSelectable(true);
         tabla.setSizeFull();

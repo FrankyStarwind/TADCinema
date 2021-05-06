@@ -19,11 +19,11 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -163,8 +163,8 @@ public class CrearSesionUI extends UI {
      * Método encargado de devolver la lista de salas existentes
      * @return Listado de salas en bbdd
      */
-    private static List<String> comboSalas() {
-        final List<String> salas = new ArrayList<>();
+    private static List<Integer> comboSalas() {
+        final List<Integer> salas = new ArrayList<>();
         BBDD bbdd = null;
         try {
             bbdd = new BBDD("salas");
@@ -178,8 +178,15 @@ public class CrearSesionUI extends UI {
         DBObject sala = null;
         while(cursor.hasNext()) {
             sala = cursor.next();
-            salas.add(sala.get("numero").toString());
+            salas.add(Integer.valueOf(sala.get("_id").toString()));
         }
+        
+        salas.sort(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o1.compareTo(o2);
+            }
+        });
         
         return salas;
     }

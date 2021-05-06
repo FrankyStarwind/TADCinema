@@ -85,10 +85,6 @@ public class AsientosUI extends UI {
         id.setInputPrompt("Selecciona el ID");
         final ComboBox tipo = new ComboBox("Tipo de asiento", comboTipos());
         tipo.setInputPrompt("Selecciona tipo");
-        final TextField fila = new TextField("Fila asiento");
-        fila.setInputPrompt("Introduce la fila");
-        final TextField numero = new TextField("Número de asiento");
-        numero.setInputPrompt("Introduce el número");
         final Button btnEditar = new Button("Modificar");
         btnEditar.setStyleName("primary");
         final Button btnEliminar = new Button("Eliminar");
@@ -98,7 +94,7 @@ public class AsientosUI extends UI {
         hLayout.addComponents(btnEditar, btnEliminar);
         hLayout.setSpacing(true);
 
-        form.addComponents(id, tipo, fila, numero, hLayout);
+        form.addComponents(id, tipo, hLayout);
         form.setMargin(true);
 
         vLayout.addComponents(info, form);
@@ -124,8 +120,6 @@ public class AsientosUI extends UI {
                     if (asiento.get("_id").equals(event.getItemId())) {
                         id.setValue(asiento.get("_id"));
                         tipo.setValue(asiento.get("tipo"));
-                        fila.setValue(asiento.get("fila").toString());
-                        numero.setValue(asiento.get("numero").toString());
                         break;
                     }
                 }
@@ -134,16 +128,10 @@ public class AsientosUI extends UI {
 
         // al pulsar el botón de editar
         btnEditar.addClickListener(e -> {
-            if (Objects.nonNull(id.getValue()) && (Objects.nonNull(tipo.getValue()) || !fila.getValue().equals("") || !numero.getValue().equals(""))) {
+            if (Objects.nonNull(id.getValue()) && (Objects.nonNull(tipo.getValue()))) {
                 BasicDBObject asiento = new BasicDBObject();
                 if (tipo.getValue() != null) {
                     asiento.append("tipo", tipo.getValue());
-                }
-                if (!fila.getValue().equals("")) {
-                    asiento.append("fila", fila.getValue());
-                }
-                if (!numero.getValue().equals("")) {
-                    asiento.append("numero", numero.getValue());
                 }
 
                 // asiento a actualizar
@@ -156,7 +144,7 @@ public class AsientosUI extends UI {
                 asientos.update(buscarPorId, asientoUpdate);
                 Notification.show("Los datos se han modificado correctamente.", Notification.Type.TRAY_NOTIFICATION);
                 // limpiar campos
-                resetarCampos(id, tipo, fila, numero);
+                resetarCampos(id, tipo);
                 // actualizamos la tabla
                 actualizarTabla(tablaAsientos);
             } else if (Objects.nonNull(id.getValue())) {
@@ -251,8 +239,6 @@ public class AsientosUI extends UI {
         final Table tabla = new Table();
         tabla.addContainerProperty("ID", String.class, null);
         tabla.addContainerProperty("Tipo", String.class, null);
-        tabla.addContainerProperty("Fila", Integer.class, null);
-        tabla.addContainerProperty("Número", Integer.class, null);
 
         BBDD bbdd = null;
         try {
@@ -269,9 +255,7 @@ public class AsientosUI extends UI {
             asiento = cursor.next();
             String id = asiento.get("_id").toString();
             String tipo = asiento.get("tipo").toString();
-            Integer fila = Integer.valueOf(asiento.get("fila").toString());
-            Integer numero = Integer.valueOf(asiento.get("numero").toString());
-            tabla.addItem(new Object[]{id, tipo, fila, numero}, id);
+            tabla.addItem(new Object[]{id, tipo}, id);
             listadoId.add(id);
         }
 
@@ -298,9 +282,7 @@ public class AsientosUI extends UI {
             asiento = cursor.next();
             String id = asiento.get("_id").toString();
             String tipo = asiento.get("tipo").toString();
-            Integer fila = Integer.valueOf(asiento.get("fila").toString());
-            Integer numero = Integer.valueOf(asiento.get("numero").toString());
-            tabla.addItem(new Object[]{id, tipo, fila, numero}, id);
+            tabla.addItem(new Object[]{id, tipo}, id);
             listadoId.add(id);
         }
 
@@ -330,11 +312,9 @@ public class AsientosUI extends UI {
      * @param fila Fila del asiento
      * @param numero Número del asiento
      */
-    private static void resetarCampos(ComboBox id, ComboBox tipo, TextField fila, TextField numero) {
+    private static void resetarCampos(ComboBox id, ComboBox tipo) {
         id.setValue(null);
         tipo.setValue(null);
-        fila.setValue("");
-        numero.setValue("");
     }
 
 }

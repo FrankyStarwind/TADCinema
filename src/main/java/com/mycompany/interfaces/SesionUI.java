@@ -58,7 +58,7 @@ public class SesionUI extends UI {
 
     @WebServlet(urlPatterns = "/sessionMovie/*", name = "SesionUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = SesionUI.class, productionMode = false)
-    public static class CarteleraUIServlet extends VaadinServlet {
+    public static class SesionUIServlet extends VaadinServlet {
     }
 
     /**

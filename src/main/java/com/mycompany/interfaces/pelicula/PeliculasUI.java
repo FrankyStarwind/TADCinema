@@ -1,6 +1,5 @@
 package com.mycompany.interfaces.pelicula;
 
-import com.mycompany.interfaces.asiento.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -39,8 +38,8 @@ import javax.servlet.annotation.WebServlet;
 public class PeliculasUI extends UI {
 
     private static List<String> listadoPeliculas = new ArrayList<>();
-    public static DBCollection peliculas = null;
-    public static Object idSelect = null;
+    private static DBCollection peliculas = null;
+    private static Object idSelect = null;
 
     @Override
     protected void init(VaadinRequest request) {
