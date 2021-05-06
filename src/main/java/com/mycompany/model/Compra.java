@@ -1,13 +1,19 @@
 package com.mycompany.model;
 
 public class Compra {
+    private String usuario;
     private String nomPelicula;
     private int fila;
     private int asiento;
     private String horaSesion;
     private double precio;
+    
+    public Compra(){
+        
+    }
 
-    public Compra(String nomPelicula, int fila, int asiento, String horaSesion) {
+    public Compra(String usuario,String nomPelicula, int fila, int asiento, String horaSesion) {
+        this.usuario=usuario;
         this.nomPelicula = nomPelicula;
         this.fila = fila;
         this.asiento = asiento;
@@ -53,6 +59,14 @@ public class Compra {
 
     public void setPrecio(double precio) {
         this.precio = precio;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
     
 }

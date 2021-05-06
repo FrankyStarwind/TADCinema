@@ -7,9 +7,9 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mycompany.components.Navegacion;
+import com.mycompany.model.Compra;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
@@ -17,8 +17,6 @@ import com.vaadin.server.WrappedSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import java.net.UnknownHostException;
@@ -37,7 +35,7 @@ public class CompraUI extends UI {
         final VerticalLayout rootLayout = new VerticalLayout();
         final Button btnLogout = new Button("Cerrar sesión");
 
-        final HorizontalLayout horarios = new HorizontalLayout();
+        //final HorizontalLayout horarios = new HorizontalLayout();
         // comprueba si se ha iniciado sesión
         comprobarSesion(rootLayout, session);
 
@@ -58,17 +56,23 @@ public class CompraUI extends UI {
         }
         DB db = mongoClient.getDB("TADCinemaDB");
 
-        Label pelicula = new Label("Sesiones de " + session.getAttribute("nombrePeli").toString());
-        rootLayout.addComponents(btnLogout, navbar, pelicula, horarios);
-        horarios.setSpacing(true);
-        mostrarSesiones(horarios, db, session);
+        Compra c = (Compra) session.getAttribute("compra");
+
+        Label nombreU = new Label("Gracias por la compra " + c.getUsuario());
+        Label pelicula = new Label("Ha comprado la sesion de la película "
+                + c.getNomPelicula() + " a las " + c.getHoraSesion() + " en la fila "
+                + c.getFila()+" y asiento "+c.getAsiento()+" a "+c.getPrecio()+"");
+
+        rootLayout.addComponents(btnLogout, navbar, nombreU,pelicula);
+        //horarios.setSpacing(true);
+        //mostrarSesiones(horarios, db, session);
         rootLayout.setMargin(true);
         rootLayout.setSpacing(true);
 
         setContent(rootLayout);
     }
 
-    @WebServlet(urlPatterns = "/compra/*", name = "CompraUIServlet", asyncSupported = true)
+    @WebServlet(urlPatterns = "/compraEntrada/*", name = "CompraEntradaUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = CompraUI.class, productionMode = false)
     public static class CarteleraUIServlet extends VaadinServlet {
     }
@@ -104,7 +108,7 @@ public class CompraUI extends UI {
         while (cursor.hasNext()) {
             sesion = cursor.next();
 
-            String hora=sesion.get("hora").toString();
+            String hora = sesion.get("hora").toString();
             Button b = new Button(hora);
             b.addClickListener(e -> {
                 //Metemos la hora
