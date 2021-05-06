@@ -244,7 +244,7 @@ public class PeliculaUI extends UI {
         setContent(rootLayout);
     }
 
-    @WebServlet(urlPatterns = "/peliculas/*", name = "AsientosUIServlet", asyncSupported = true)
+    @WebServlet(urlPatterns = "/peliculas/*", name = "PeliculasUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = PeliculaUI.class, productionMode = false)
     public static class AsientosUIServlet extends VaadinServlet {
     }
@@ -272,7 +272,7 @@ public class PeliculaUI extends UI {
         final Table tabla = new Table();
         tabla.addContainerProperty("Pelicula", String.class, null);
         tabla.addContainerProperty("Idioma", String.class, null);
-        tabla.addContainerProperty("Director", Integer.class, null);
+        tabla.addContainerProperty("Director", String.class, null);
         tabla.addContainerProperty("Año", Integer.class, null);
         tabla.addContainerProperty("Duración", Integer.class, null);
         
@@ -292,10 +292,10 @@ public class PeliculaUI extends UI {
             String titulo = asiento.get("titulo").toString();
             String idioma = asiento.get("idioma").toString();
             String director = asiento.get("director").toString();
-            Integer anyo = Integer.valueOf(asiento.get("numero").toString());
+            Integer anyo = Integer.valueOf(asiento.get("año").toString());
             
             Integer duracion = Integer.valueOf(asiento.get("duracion").toString());
-            tabla.addItem(new Object[]{titulo, idioma, duracion, anyo}, titulo);
+            tabla.addItem(new Object[]{titulo, idioma,director, anyo, duracion}, titulo);
             listadoPeliculas.add(titulo);
         }
 

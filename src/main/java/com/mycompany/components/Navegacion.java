@@ -48,7 +48,7 @@ public class Navegacion extends CustomComponent {
             btnAsientos.addClickListener(e -> {
                 Page.getCurrent().setLocation("/asientos");
             });
-            btnAsientos.addClickListener(e -> {
+            btnPelis.addClickListener(e -> {
                 Page.getCurrent().setLocation("/peliculas");
             });
         }
