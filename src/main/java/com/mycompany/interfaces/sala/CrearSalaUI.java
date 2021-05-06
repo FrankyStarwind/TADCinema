@@ -86,11 +86,11 @@ public class CrearSalaUI extends UI {
                     final DBCollection salas = bbdd.getColeccion();
                     
                     final BasicDBObject sala = new BasicDBObject();
-                    sala.append("numero", numero.getValue());
+                    sala.append("_id", numero.getValue());
                     sala.append("capacidad", capacidad.getValue());
                     sala.append("tipo", tipoSala.getValue());
                     
-                    final DBObject query = new BasicDBObject().append("numero", numero.getValue());
+                    final DBObject query = new BasicDBObject().append("_id", numero.getValue());
                     final DBObject data = salas.findOne(query);
                     
                     if (data == null) {

@@ -1,14 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mycompany.model;
 
-/**
- *
- * @author frank
- */
 public class Compra {
     private String nomPelicula;
     private int fila;
@@ -23,7 +14,6 @@ public class Compra {
         this.horaSesion = horaSesion;
         this.precio = 5.00;
     }
-
     
     public String getNomPelicula() {
         return nomPelicula;
@@ -64,7 +54,5 @@ public class Compra {
     public void setPrecio(double precio) {
         this.precio = precio;
     }
-    
-    
     
 }
