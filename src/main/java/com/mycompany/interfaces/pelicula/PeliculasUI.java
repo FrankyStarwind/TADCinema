@@ -1,4 +1,4 @@
-package com.mycompany.interfaces.sala;
+package com.mycompany.interfaces.pelicula;
 
 import com.mycompany.interfaces.asiento.*;
 import com.mongodb.BasicDBObject;
@@ -36,11 +36,12 @@ import java.util.logging.Logger;
 import javax.servlet.annotation.WebServlet;
 
 @Theme("mytheme")
-public class PeliculaUI extends UI {
+public class PeliculasUI extends UI {
 
     private static List<String> listadoPeliculas = new ArrayList<>();
     public static DBCollection peliculas = null;
-    public static String idSelect="";
+    public static Object idSelect = null;
+
     @Override
     protected void init(VaadinRequest request) {
         final WrappedSession session = getSession().getSession();
@@ -59,7 +60,7 @@ public class PeliculaUI extends UI {
 
         // panel de navegación
         final Navegacion navbar = new Navegacion();
-        
+
         // botón crear asiento (redirige a la ui determinada)
         final HorizontalLayout botoneraCrear = new HorizontalLayout();
         final Button btnCrear = new Button("Crear Pelicula");
@@ -81,42 +82,33 @@ public class PeliculaUI extends UI {
         // formulario edición
         final FormLayout form = new FormLayout();
 
-        final ComboBox titulo = new ComboBox("Pelicula", listadoPeliculas);
+        final ComboBox titulo = new ComboBox("Título", listadoPeliculas);
         titulo.setRequired(true);
         titulo.setInputPrompt("Selecciona la pelicula");
-        
-        final ComboBox idioma = new ComboBox("Idioma de peliculas", comboIdiomas());
+        final ComboBox idioma = new ComboBox("Idioma", comboIdiomas());
         idioma.setInputPrompt("Selecciona opcion de idioma");
-        
         final TextField director = new TextField("Director");
         director.setInputPrompt("Introduce el director");
-        
-        
         final TextField anyo = new TextField("Año");
         anyo.setInputPrompt("Introduce el año de estreno");
-        
-        final TextField duracion = new TextField("duracion");
-        duracion.setInputPrompt("Introduce la duración de la película");
-        
-        
+        final TextField duracion = new TextField("Duración (minutos)");
+        duracion.setInputPrompt("Introduce los minutos");
         final Button btnEditar = new Button("Modificar");
         btnEditar.setStyleName("primary");
-        
         final Button btnEliminar = new Button("Eliminar");
         btnEliminar.setStyleName("danger");
-
+        
         final HorizontalLayout hLayout = new HorizontalLayout();
         hLayout.addComponents(btnEditar, btnEliminar);
         hLayout.setSpacing(true);
 
-        form.addComponents(titulo, idioma, director, anyo, hLayout);
+        form.addComponents(titulo, idioma, director, anyo, duracion, hLayout);
         form.setMargin(true);
 
         vLayout.addComponents(info, form);
         vLayout.setMargin(true);
         panelEdit.setContent(vLayout);
 
-        
         // Estructura del grid
         grid.addComponent(tablaPelis, 0, 0);
         grid.addComponent(panelEdit, 1, 0);
@@ -134,14 +126,14 @@ public class PeliculaUI extends UI {
                 while (cursor.hasNext()) {
                     peliculas = cursor.next();
                     if (peliculas.get("titulo").equals(event.getItemId())) {
-                        String seleccion=peliculas.get("_id").toString();
-                        idSelect=seleccion;
+                        Object seleccion = peliculas.get("_id");
+                        idSelect = seleccion;
                         titulo.setValue(peliculas.get("titulo"));
                         idioma.setValue(peliculas.get("idioma"));
                         director.setValue(peliculas.get("director").toString());
                         anyo.setValue(peliculas.get("año").toString());
                         duracion.setValue(peliculas.get("duracion").toString());
-                        
+
                         break;
                     }
                 }
@@ -150,8 +142,8 @@ public class PeliculaUI extends UI {
 
         // al pulsar el botón de editar
         btnEditar.addClickListener(e -> {
-            if (Objects.nonNull(titulo.getValue()) &&
-                    (Objects.nonNull(idioma.getValue()) 
+            if (Objects.nonNull(titulo.getValue())
+                    && (Objects.nonNull(idioma.getValue())
                     || !director.getValue().equals("")
                     || !anyo.getValue().equals("")
                     || !duracion.getValue().equals(""))) {
@@ -166,27 +158,27 @@ public class PeliculaUI extends UI {
                     peliEdit.append("año", anyo.getValue());
                 }
                 if (!duracion.getValue().equals("")) {
-                    peliEdit.append("duracion", anyo.getValue());
+                    peliEdit.append("duracion", duracion.getValue());
                 }
-                
+
                 // asiento a actualizar
                 BasicDBObject asientoUpdate = new BasicDBObject();
                 asientoUpdate.put("$set", peliEdit);
                 // buscar por id
                 BasicDBObject buscarPorId = new BasicDBObject();
                 buscarPorId.append("_id", idSelect);
-                
+
                 // actualiza el elemento por id
                 peliculas.update(buscarPorId, asientoUpdate);
                 Notification.show("Los datos se han modificado correctamente.", Notification.Type.TRAY_NOTIFICATION);
                 // limpiar campos
-                resetarCampos(titulo, idioma, director, anyo);
+                resetarCampos(titulo, idioma, director, anyo, duracion);
                 // actualizamos la tabla
                 actualizarTabla(tablaPelis);
             } else if (Objects.nonNull(titulo.getValue())) {
                 Notification.show("Debes rellenar algún campo más.", Notification.Type.ERROR_MESSAGE);
-            }else {
-                Notification.show("Error", "El campo 'Identificador' es obligatorio.", Notification.Type.ERROR_MESSAGE);
+            } else {
+                Notification.show("Error", "El campo 'Película' es obligatorio.", Notification.Type.ERROR_MESSAGE);
             }
         });
 
@@ -212,24 +204,27 @@ public class PeliculaUI extends UI {
             if (Objects.nonNull(titulo.getValue())) {
                 addWindow(ventanaConfirmacion);
             } else {
-                Notification.show("Primero debes de seleccionar un identificador de asiento", Notification.Type.ERROR_MESSAGE);
+                Notification.show("Primero debes de seleccionar una película", Notification.Type.ERROR_MESSAGE);
             }
         });
 
         // al pulsar el botón de confirmar eliminación
         btnConfirmar.addClickListener(e -> {
-            // Obtengo el asiento
-            DBObject asiento = peliculas.findOne(new BasicDBObject().append("_id", idSelect));
-            // Elimino el asiento
-            peliculas.remove(asiento);
-            
-            // actualizo tabla y elimino ventana
-            actualizarTabla(tablaPelis);
-            removeWindow(ventanaConfirmacion);
-            
-            Notification.show("El registro se ha eliminado correctamente", Notification.Type.TRAY_NOTIFICATION);
+            // Obtengo la película
+            DBObject pelicula = peliculas.findOne(new BasicDBObject().append("_id", idSelect));
+
+            if (Objects.nonNull(pelicula)) {
+                // Elimino la película
+                peliculas.remove(pelicula);
+
+                // actualizo tabla y elimino ventana
+                actualizarTabla(tablaPelis);
+                removeWindow(ventanaConfirmacion);
+
+                Notification.show("El registro se ha eliminado correctamente", Notification.Type.TRAY_NOTIFICATION);
+            }
         });
-        
+
         // al pulsar el botón de cancelar
         btnCancelar.addClickListener(e -> {
             removeWindow(ventanaConfirmacion);
@@ -245,7 +240,7 @@ public class PeliculaUI extends UI {
     }
 
     @WebServlet(urlPatterns = "/peliculas/*", name = "PeliculasUIServlet", asyncSupported = true)
-    @VaadinServletConfiguration(ui = PeliculaUI.class, productionMode = false)
+    @VaadinServletConfiguration(ui = PeliculasUI.class, productionMode = false)
     public static class AsientosUIServlet extends VaadinServlet {
     }
 
@@ -263,8 +258,8 @@ public class PeliculaUI extends UI {
     }
 
     /**
-     * Método encargado de obtener la lista de peliculas general, crear una tabla
- con ella y devolverla
+     * Método encargado de obtener la lista de peliculas general, crear una
+     * tabla con ella y devolverla
      *
      * @return Tabla de peliculas
      */
@@ -275,92 +270,93 @@ public class PeliculaUI extends UI {
         tabla.addContainerProperty("Director", String.class, null);
         tabla.addContainerProperty("Año", Integer.class, null);
         tabla.addContainerProperty("Duración", Integer.class, null);
-        
+
         BBDD bbdd = null;
         try {
             bbdd = new BBDD("movies");
         } catch (UnknownHostException ex) {
-            Logger.getLogger(PeliculaUI.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PeliculasUI.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         peliculas = bbdd.getColeccion();
         final DBCursor cursor = peliculas.find();
 
-        DBObject asiento = null;
+        DBObject pelicula = null;
         while (cursor.hasNext()) {
-            asiento = cursor.next();
-            String titulo = asiento.get("titulo").toString();
-            String idioma = asiento.get("idioma").toString();
-            String director = asiento.get("director").toString();
-            Integer anyo = Integer.valueOf(asiento.get("año").toString());
-            
-            Integer duracion = Integer.valueOf(asiento.get("duracion").toString());
-            tabla.addItem(new Object[]{titulo, idioma,director, anyo, duracion}, titulo);
+            pelicula = cursor.next();
+            String titulo = pelicula.get("titulo").toString();
+            String idioma = pelicula.get("idioma").toString();
+            String director = pelicula.get("director").toString();
+            Integer anyo = Integer.valueOf(pelicula.get("año").toString());
+
+            Integer duracion = Integer.valueOf(pelicula.get("duracion").toString());
+            tabla.addItem(new Object[]{titulo, idioma, director, anyo, duracion}, titulo);
             listadoPeliculas.add(titulo);
         }
 
         tabla.setSelectable(true);
         tabla.setSizeFull();
-        Object[] properties = {"ID"};
+        Object[] properties = {"Año"};
         boolean[] ordering = {true};
         tabla.sort(properties, ordering);
         return tabla;
     }
-    
+
     /**
      * Método encargado de actualizar la tabla de peliculas
+     *
      * @param tabla Tabla de peliculas
      */
     private static void actualizarTabla(Table tabla) {
         tabla.removeAllItems();
         listadoPeliculas.clear();
         final DBCursor cursor = peliculas.find();
-        
-        DBObject asiento = null;
-        while(cursor.hasNext()) {
-            asiento = cursor.next();
-            String id = asiento.get("_id").toString();
-            String tipo = asiento.get("tipo").toString();
-            Integer fila = Integer.valueOf(asiento.get("fila").toString());
-            Integer numero = Integer.valueOf(asiento.get("numero").toString());
-            tabla.addItem(new Object[]{id, tipo, fila, numero}, id);
-            listadoPeliculas.add(id);
+
+        DBObject pelicula = null;
+        while (cursor.hasNext()) {
+            pelicula = cursor.next();
+            String titulo = pelicula.get("titulo").toString();
+            String idioma = pelicula.get("idioma").toString();
+            String director = pelicula.get("director").toString();
+            Integer anyo = Integer.valueOf(pelicula.get("año").toString());
+            Integer duracion = Integer.valueOf(pelicula.get("duracion").toString());
+            tabla.addItem(new Object[]{titulo, idioma, director, anyo, duracion}, titulo);
+            listadoPeliculas.add(titulo);
         }
-        
-        Object[] properties = {"ID"};
+
+        Object[] properties = {"Año"};
         boolean[] ordering = {true};
         tabla.sort(properties, ordering);
     }
 
     /**
-     * Método encargado de cargar el combo de tipo de asiento
+     * Método encargado de cargar el combo de idiomas
      *
-     * @return Listado de tipos de asiento
+     * @return Listado de idiomas
      */
     private static List<String> comboIdiomas() {
-        
-    
         List<String> tipos = new ArrayList<>();
         tipos.add("Castellano");
         tipos.add("VOSE");
         tipos.add("Latino");
         return tipos;
-    
     }
 
     /**
      * Método encargado de resetear los campos del formulario
      *
-     * @param id Identificador del asiento
-     * @param tipo Tipo de asiento
-     * @param fila Fila del asiento
-     * @param numero Número del asiento
+     * @param titulo Título de la película
+     * @param idioma Idioma de la película
+     * @param director Director de la película
+     * @param anyo Año de la película
+     * @param duracion Duración en minutos de la película
      */
-    private static void resetarCampos(ComboBox id, ComboBox tipo, TextField fila, TextField numero) {
-        id.setValue(null);
-        tipo.setValue(null);
-        fila.setValue("");
-        numero.setValue("");
+    private static void resetarCampos(ComboBox titulo, ComboBox idioma, TextField director, TextField anyo, TextField duracion) {
+        titulo.setValue(null);
+        idioma.setValue(null);
+        director.setValue("");
+        anyo.setValue("");
+        duracion.setValue("");
     }
 
 }
