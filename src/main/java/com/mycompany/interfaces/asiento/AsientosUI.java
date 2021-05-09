@@ -79,8 +79,6 @@ public class AsientosUI extends UI {
         tipo.setInputPrompt("Selecciona tipo");
         final ComboBox sala = new ComboBox("Sala", comboSalas());
         sala.setInputPrompt("Selecciona la sala");
-        final ComboBox disponible = new ComboBox("Disponible", comboDisponible());
-        disponible.setInputPrompt("Disponibilidad");
         final Button btnEditar = new Button("Modificar");
         btnEditar.setStyleName("primary");
         final Button btnEliminar = new Button("Eliminar");
@@ -90,7 +88,7 @@ public class AsientosUI extends UI {
         hLayout.addComponents(btnEditar, btnEliminar);
         hLayout.setSpacing(true);
 
-        form.addComponents(id, tipo, sala, disponible, hLayout);
+        form.addComponents(id, tipo, sala, hLayout);
         form.setMargin(true);
 
         vLayout.addComponents(info, form);
@@ -117,7 +115,6 @@ public class AsientosUI extends UI {
                         id.setValue(asiento.get("_id"));
                         tipo.setValue(asiento.get("tipo"));
                         sala.setValue(asiento.get("sala"));
-                        disponible.setValue(asiento.get("disponible").toString());
                         break;
                     }
                 }
@@ -134,9 +131,6 @@ public class AsientosUI extends UI {
                 if (sala.getValue() != null) {
                     asiento.append("sala", sala.getValue());
                 }
-                if (disponible.getValue() != null) {
-                    asiento.append("disponible", disponible.getValue());
-                }
 
                 // asiento a actualizar
                 BasicDBObject asientoUpdate = new BasicDBObject();
@@ -148,7 +142,7 @@ public class AsientosUI extends UI {
                 asientos.update(buscarPorId, asientoUpdate);
                 Notification.show("Los datos se han modificado correctamente.", Notification.Type.TRAY_NOTIFICATION);
                 // limpiar campos
-                resetarCampos(id, tipo, sala, disponible);
+                resetarCampos(id, tipo, sala);
                 // actualizamos la tabla
                 actualizarTabla(tablaAsientos);
             } else if (Objects.nonNull(id.getValue())) {
@@ -197,7 +191,7 @@ public class AsientosUI extends UI {
                 actualizarTabla(tablaAsientos);
                 removeWindow(ventanaConfirmacion);
                 // resetea los campos
-                resetarCampos(id, tipo, sala, disponible);
+                resetarCampos(id, tipo, sala);
 
                 Notification.show("El registro se ha eliminado correctamente", Notification.Type.TRAY_NOTIFICATION);
             }
@@ -246,7 +240,6 @@ public class AsientosUI extends UI {
         tabla.addContainerProperty("Asiento", String.class, null);
         tabla.addContainerProperty("Tipo", String.class, null);
         tabla.addContainerProperty("Sala", String.class, null);
-        tabla.addContainerProperty("Disponible", String.class, null);
         
         BBDD bbdd = null;
         try {
@@ -264,8 +257,7 @@ public class AsientosUI extends UI {
             String id = asiento.get("_id").toString();
             String tipo = asiento.get("tipo").toString();
             String sala = asiento.get("sala").toString();
-            String disponible = asiento.get("disponible").toString();
-            tabla.addItem(new Object[]{id, tipo, sala, disponible.equals("Si") ? "Si" : "No"}, id);
+            tabla.addItem(new Object[]{id, tipo, sala}, id);
             listadoId.add(id);
         }
 
@@ -293,8 +285,7 @@ public class AsientosUI extends UI {
             String id = asiento.get("_id").toString();
             String tipo = asiento.get("tipo").toString();
             String sala = asiento.get("sala").toString();
-            String disponible = asiento.get("disponible").toString();
-            tabla.addItem(new Object[]{id, tipo, sala, disponible.equals("Si") ? "Si" : "No"}, id);
+            tabla.addItem(new Object[]{id, tipo, sala}, id);
             listadoId.add(id);
         }
 
@@ -367,13 +358,11 @@ public class AsientosUI extends UI {
      * @param id Identificador del asiento
      * @param tipo Tipo de asiento
      * @param sala Sala del asiento
-     * @param disponible Disponibilidad del asiento
      */
-    private static void resetarCampos(ComboBox id, ComboBox tipo, ComboBox sala, ComboBox disponible) {
+    private static void resetarCampos(ComboBox id, ComboBox tipo, ComboBox sala) {
         id.setValue(null);
         tipo.setValue(null);
         sala.setValue(null);
-        disponible.setValue(null);
     }
 
 }

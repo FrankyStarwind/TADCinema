@@ -31,7 +31,7 @@ import org.bson.types.ObjectId;
 
 @Theme("mytheme")
 public class ComprasUI extends UI {
-    
+
 //    private final static List<String> listadoCompras = new ArrayList<>();
     private static DBCollection compras = null;
     private static Object idSelected = null;
@@ -56,9 +56,11 @@ public class ComprasUI extends UI {
 
         // tabla de compras
         final Table tablaCompras = obtenerTabla();
-        
+
         final Button btnEliminar = new Button("Eliminar");
         btnEliminar.setStyleName("danger");
+        final Button btnEliminarTodos = new Button("Eliminar todo");
+        btnEliminarTodos.setStyleName("dark");
 
         // se selecciona un registro de la tabla
         tablaCompras.addItemClickListener(new ItemClickEvent.ItemClickListener() {
@@ -85,6 +87,23 @@ public class ComprasUI extends UI {
         ventanaConfirmacion.setResizable(false);
         ventanaConfirmacion.setContent(botoneraPopup);
 
+        // botonera de confirmar/cancelar
+        final HorizontalLayout botoneraPopup2 = new HorizontalLayout();
+        final Button btnConfirmar2 = new Button("Eliminar");
+        btnConfirmar2.setStyleName("danger");
+        final Button btnCancelar2 = new Button("Cancelar");
+        botoneraPopup2.addComponents(btnConfirmar2, btnCancelar2);
+        botoneraPopup2.setMargin(true);
+        botoneraPopup2.setSpacing(true);
+
+        // ventana confirmación
+        final Window ventanaConfirmacion2 = new Window("¿Estás seguro?");
+        ventanaConfirmacion2.center();
+        ventanaConfirmacion2.setClosable(false);
+        ventanaConfirmacion2.setDraggable(false);
+        ventanaConfirmacion2.setResizable(false);
+        ventanaConfirmacion2.setContent(botoneraPopup2);
+
         // al pulsar el botón de eliminar
         btnEliminar.addClickListener(e -> {
             if (Objects.nonNull(idSelected)) {
@@ -96,12 +115,29 @@ public class ComprasUI extends UI {
 
         // al pulsar el botón de confirmar eliminación
         btnConfirmar.addClickListener(e -> {
-            // Obtengo la sesión
+            // Obtengo la compra
             DBObject compra = compras.findOne(new BasicDBObject().append("_id", idSelected));
 
             if (Objects.nonNull(compra)) {
-                // Elimino la sesión
+                // Elimino la conmpra
                 compras.remove(compra);
+
+                try {
+                    final BBDD bbdd = new BBDD("ocupados");
+                    final DBCollection ocupados = bbdd.getColeccion();
+                    final BasicDBObject ocupado = new BasicDBObject();
+                    ocupado.append("hora", compra.get("horaSesion"));
+                    ocupado.append("sala", compra.get("sala"));
+                    ocupado.append("fila", compra.get("fila"));
+                    ocupado.append("numero", compra.get("asiento"));
+
+                    DBObject elemento = ocupados.findOne(ocupado);
+                    if (Objects.nonNull(elemento)) {
+                        ocupados.remove(elemento);
+                    }
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(ComprasUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
                 // actualizo tabla y elimino ventana
                 actualizarTabla(tablaCompras);
@@ -116,20 +152,67 @@ public class ComprasUI extends UI {
             removeWindow(ventanaConfirmacion);
         });
 
+        // al pulsar el botón de eliminar todos
+        btnEliminarTodos.addClickListener(e -> {
+            addWindow(ventanaConfirmacion2);
+        });
+
+        // al pulsar el botón de confirmar eliminación
+        btnConfirmar2.addClickListener(e -> {
+            try {
+                BBDD bbdd = new BBDD("ocupados");
+                final DBCollection ocupados = bbdd.getColeccion();
+                DBCursor cursor = ocupados.find();
+                
+                DBObject elemento = null;
+                while(cursor.hasNext()) {
+                    elemento = cursor.next();
+                    ocupados.remove(elemento);
+                }
+                
+                bbdd = new BBDD("compras");
+                final DBCollection compras = bbdd.getColeccion();
+                cursor = compras.find();
+                
+                elemento = null;
+                while(cursor.hasNext()) {
+                    elemento = cursor.next();
+                    compras.remove(elemento);
+                }
+            } catch (UnknownHostException ex) {
+                Logger.getLogger(ComprasUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            // actualizo tabla y elimino ventana
+            actualizarTabla(tablaCompras);
+            removeWindow(ventanaConfirmacion2);
+
+            Notification.show("Los registros se han eliminado correctamente", Notification.Type.TRAY_NOTIFICATION);
+        });
+
+        // al pulsar el botón de cancelar
+        btnCancelar2.addClickListener(e -> {
+            removeWindow(ventanaConfirmacion2);
+        });
+
+        final HorizontalLayout botonera = new HorizontalLayout();
+        botonera.setSpacing(true);
+        botonera.addComponents(btnEliminar, btnEliminarTodos);
+
         // ESTRUCTURA DE LA INTERFAZ
-        rootLayout.addComponents(btnLogout, navbar, tablaCompras, btnEliminar);
+        rootLayout.addComponents(btnLogout, navbar, tablaCompras, botonera);
 
         rootLayout.setMargin(true);
         rootLayout.setSpacing(true);
 
         setContent(rootLayout);
     }
-    
+
     @WebServlet(urlPatterns = "/compras/*", name = "ComprasUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = ComprasUI.class, productionMode = false)
     public static class ComprasUIServlet extends VaadinServlet {
     }
-    
+
     /**
      * Método encargado de comprobar si la sesión existe o no Si no existe,
      * redirecciona al login
@@ -215,5 +298,5 @@ public class ComprasUI extends UI {
 //            listadoPeliculas.add(pelicula);
         }
     }
-    
+
 }

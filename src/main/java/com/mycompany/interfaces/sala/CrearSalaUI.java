@@ -119,7 +119,6 @@ public class CrearSalaUI extends UI {
                                 asiento.append("fila", fila);
                                 asiento.append("numero", col);
                                 asiento.append("sala", sala.get("_id"));
-                                asiento.append("disponible", "Si");
                                 
                                 tablaAsientos.insert(asiento);
                             }
