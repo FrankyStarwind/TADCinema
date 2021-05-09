@@ -5,6 +5,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mycompany.components.Navegacion;
+import com.mycompany.interfaces.sesion.CrearSesionUI;
 import com.mycompany.utils.BBDD;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -22,12 +23,12 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -85,6 +86,10 @@ public class AsientosUI extends UI {
         id.setInputPrompt("Selecciona el ID");
         final ComboBox tipo = new ComboBox("Tipo de asiento", comboTipos());
         tipo.setInputPrompt("Selecciona tipo");
+        final ComboBox sala = new ComboBox("Sala", comboSalas());
+        sala.setInputPrompt("Selecciona la sala");
+        final ComboBox disponible = new ComboBox("Disponible", comboDisponible());
+        disponible.setInputPrompt("Disponibilidad");
         final Button btnEditar = new Button("Modificar");
         btnEditar.setStyleName("primary");
         final Button btnEliminar = new Button("Eliminar");
@@ -94,7 +99,7 @@ public class AsientosUI extends UI {
         hLayout.addComponents(btnEditar, btnEliminar);
         hLayout.setSpacing(true);
 
-        form.addComponents(id, tipo, hLayout);
+        form.addComponents(id, tipo, sala, disponible, hLayout);
         form.setMargin(true);
 
         vLayout.addComponents(info, form);
@@ -120,6 +125,8 @@ public class AsientosUI extends UI {
                     if (asiento.get("_id").equals(event.getItemId())) {
                         id.setValue(asiento.get("_id"));
                         tipo.setValue(asiento.get("tipo"));
+                        sala.setValue(Integer.valueOf(asiento.get("sala").toString()));
+                        disponible.setValue(asiento.get("disponible").toString());
                         break;
                     }
                 }
@@ -133,6 +140,12 @@ public class AsientosUI extends UI {
                 if (tipo.getValue() != null) {
                     asiento.append("tipo", tipo.getValue());
                 }
+                if (sala.getValue() != null) {
+                    asiento.append("sala", sala.getValue());
+                }
+                if (disponible.getValue() != null) {
+                    asiento.append("disponible", disponible.getValue());
+                }
 
                 // asiento a actualizar
                 BasicDBObject asientoUpdate = new BasicDBObject();
@@ -144,7 +157,7 @@ public class AsientosUI extends UI {
                 asientos.update(buscarPorId, asientoUpdate);
                 Notification.show("Los datos se han modificado correctamente.", Notification.Type.TRAY_NOTIFICATION);
                 // limpiar campos
-                resetarCampos(id, tipo);
+                resetarCampos(id, tipo, sala, disponible);
                 // actualizamos la tabla
                 actualizarTabla(tablaAsientos);
             } else if (Objects.nonNull(id.getValue())) {
@@ -192,6 +205,8 @@ public class AsientosUI extends UI {
                 // actualizo tabla y elimino ventana
                 actualizarTabla(tablaAsientos);
                 removeWindow(ventanaConfirmacion);
+                // resetea los campos
+                resetarCampos(id, tipo, sala, disponible);
 
                 Notification.show("El registro se ha eliminado correctamente", Notification.Type.TRAY_NOTIFICATION);
             }
@@ -239,7 +254,9 @@ public class AsientosUI extends UI {
         final Table tabla = new Table();
         tabla.addContainerProperty("ID", String.class, null);
         tabla.addContainerProperty("Tipo", String.class, null);
-
+        tabla.addContainerProperty("Sala", Integer.class, null);
+        tabla.addContainerProperty("Disponible", String.class, null);
+        
         BBDD bbdd = null;
         try {
             bbdd = new BBDD("asientos");
@@ -255,13 +272,15 @@ public class AsientosUI extends UI {
             asiento = cursor.next();
             String id = asiento.get("_id").toString();
             String tipo = asiento.get("tipo").toString();
-            tabla.addItem(new Object[]{id, tipo}, id);
+            Integer sala = Integer.valueOf(asiento.get("sala").toString());
+            String disponible = asiento.get("disponible").toString();
+            tabla.addItem(new Object[]{id, tipo, sala, disponible.equals("Si") ? "Si" : "No"}, id);
             listadoId.add(id);
         }
 
         tabla.setSelectable(true);
         tabla.setSizeFull();
-        Object[] properties = {"ID"};
+        Object[] properties = {"Sala"};
         boolean[] ordering = {true};
         tabla.sort(properties, ordering);
         return tabla;
@@ -282,11 +301,13 @@ public class AsientosUI extends UI {
             asiento = cursor.next();
             String id = asiento.get("_id").toString();
             String tipo = asiento.get("tipo").toString();
-            tabla.addItem(new Object[]{id, tipo}, id);
+            Integer sala = Integer.valueOf(asiento.get("sala").toString());
+            String disponible = asiento.get("disponible").toString();
+            tabla.addItem(new Object[]{id, tipo, sala, disponible.equals("Si") ? "Si" : "No"}, id);
             listadoId.add(id);
         }
 
-        Object[] properties = {"ID"};
+        Object[] properties = {"Sala"};
         boolean[] ordering = {true};
         tabla.sort(properties, ordering);
     }
@@ -303,18 +324,65 @@ public class AsientosUI extends UI {
         tipos.add("Reclinable");
         return tipos;
     }
+    
+    /**
+     * Método encargado de devolver la lista de salas existentes
+     *
+     * @return Listado de salas en bbdd
+     */
+    private static List<Integer> comboSalas() {
+        final List<Integer> salas = new ArrayList<>();
+        BBDD bbdd = null;
+        try {
+            bbdd = new BBDD("salas");
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(CrearSesionUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        final DBCollection data = bbdd.getColeccion();
+        final DBCursor cursor = data.find();
+
+        DBObject sala = null;
+        while (cursor.hasNext()) {
+            sala = cursor.next();
+            salas.add(Integer.valueOf(sala.get("_id").toString()));
+        }
+        
+        salas.sort(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o1.compareTo(o2);
+            }
+        });
+
+        return salas;
+    }
+    
+    /**
+     * Método encargado de cargar el combo de opciones de disponibilidad
+     *
+     * @return Listado de tipos de opciones
+     */
+    private static List<String> comboDisponible() {
+        List<String> opciones = new ArrayList<>();
+        opciones.add("Si");
+        opciones.add("No");
+        return opciones;
+    }
 
     /**
      * Método encargado de resetear los campos del formulario
      *
      * @param id Identificador del asiento
      * @param tipo Tipo de asiento
-     * @param fila Fila del asiento
-     * @param numero Número del asiento
+     * @param sala Sala del asiento
+     * @param disponible Disponibilidad del asiento
      */
-    private static void resetarCampos(ComboBox id, ComboBox tipo) {
+    private static void resetarCampos(ComboBox id, ComboBox tipo, ComboBox sala, ComboBox disponible) {
         id.setValue(null);
         tipo.setValue(null);
+        sala.setValue(null);
+        disponible.setValue(null);
     }
 
 }

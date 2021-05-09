@@ -219,6 +219,8 @@ public class PeliculasUI extends UI {
                 // actualizo tabla y elimino ventana
                 actualizarTabla(tablaPelis);
                 removeWindow(ventanaConfirmacion);
+                // resetea los campos
+                resetarCampos(titulo, idioma, director, anyo, duracion);
 
                 Notification.show("El registro se ha eliminado correctamente", Notification.Type.TRAY_NOTIFICATION);
             }

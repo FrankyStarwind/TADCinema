@@ -199,6 +199,8 @@ public class SesionesUI extends UI {
                 // actualizo tabla y elimino ventana
                 actualizarTabla(tablaSesiones);
                 removeWindow(ventanaConfirmacion);
+                // resetea los campos
+                resetarCampos(pelicula, sala, hora);
 
                 Notification.show("El registro se ha eliminado correctamente", Notification.Type.TRAY_NOTIFICATION);
             }
