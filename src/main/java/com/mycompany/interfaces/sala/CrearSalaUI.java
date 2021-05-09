@@ -54,14 +54,15 @@ public class CrearSalaUI extends UI {
 
         // formulario crear sala
         final FormLayout formCreate = new FormLayout();
-        final ComboBox numero = new ComboBox("Número", comboNumeros());
+        final ComboBox numero = new ComboBox("Nº sala", comboNumeros());
         numero.setRequired(true);
         numero.setInputPrompt("Selecciona número");
         final TextField filas = new TextField("Filas");
         filas.setRequired(true);
+        filas.setInputPrompt("Número de filas");
         final TextField asientos = new TextField("Asientos");
         asientos.setRequired(true);
-
+        asientos.setInputPrompt("Número de asientos");
         final ComboBox tipoSala = new ComboBox("Tipo de sala", comboTipos());
         tipoSala.setRequired(true);
         tipoSala.setInputPrompt("Selecciona el tipo");
@@ -81,7 +82,7 @@ public class CrearSalaUI extends UI {
 
         // crea una película nueva 
         btnCrear.addClickListener(e -> {
-            if (validarCampos(numero, asientos, tipoSala)) {
+            if (validarCampos(numero, filas, asientos, tipoSala)) {
                 try {
                     final BBDD bbdd = new BBDD("salas");
 
@@ -101,7 +102,7 @@ public class CrearSalaUI extends UI {
 
                     if (data == null) {
                         salas.insert(sala);
-                        resetarCampos(numero, asientos, tipoSala);
+                        resetarCampos(numero, filas, asientos, tipoSala);
                         Notification.show("Se ha creado la sala correctamente", Notification.Type.TRAY_NOTIFICATION);
                         Page.getCurrent().setLocation("/salas");
                     } else {
@@ -170,20 +171,25 @@ public class CrearSalaUI extends UI {
      * Método encargado de validar los campos del formulario
      *
      * @param numero Número de la sala
-     * @param capacidad Capacidad medida en asientos
+     * @param filas Filas de asientos
+     * @param asientos Número de asientos por fila
      * @param tipoSala Tipo de sala
      * @return TRUE/FALSE
      */
-    private static boolean validarCampos(ComboBox numero, TextField capacidad, ComboBox tipoSala) {
+    private static boolean validarCampos(ComboBox numero, TextField filas, TextField asientos, ComboBox tipoSala) {
         boolean validos = true;
         String errores = "";
 
         if (numero.getValue() == null) {
-            errores += "El campo 'Número' no puede estar vacío\n";
+            errores += "El campo 'Nº sala' no puede estar vacío\n";
             validos = false;
         }
-        if (capacidad.getValue() == "") {
-            errores += "El campo 'Capacidad (asientos)' es obligatorio\n";
+        if (filas.getValue() == "") {
+            errores += "El campo 'Filas' es obligatorio\n";
+            validos = false;
+        }
+        if (asientos.getValue() == "") {
+            errores += "El campo 'Asientos' es obligatorio\n";
             validos = false;
         }
         if (tipoSala.getValue() == null) {
@@ -202,12 +208,14 @@ public class CrearSalaUI extends UI {
      * Método encargado de resetear los campos del formulario
      *
      * @param numero Número de sala
-     * @param capacidad Capacidad de la sala
+     * @param filas Filas de asientos
+     * @param asientos Número de asientos por fila
      * @param tipoSala Tipo de sala
      */
-    private static void resetarCampos(ComboBox numero, TextField capacidad, ComboBox tipoSala) {
+    private static void resetarCampos(ComboBox numero, TextField filas, TextField asientos, ComboBox tipoSala) {
         numero.setValue(null);
-        capacidad.setValue("");
+        filas.setValue("");
+        asientos.setValue("");
         tipoSala.setValue(null);
     }
 
