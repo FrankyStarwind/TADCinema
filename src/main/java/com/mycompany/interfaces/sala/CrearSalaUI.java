@@ -112,7 +112,7 @@ public class CrearSalaUI extends UI {
                         
                         for (int fila = 1; fila <= numFilas; fila++) {
                             for (int col = 1; col <= numAsientos; col++) {
-                                idAsiento = fila + "-" + col;
+                                idAsiento = sala.get("_id").toString()+ "-" +fila + "-" + col;
                                 
                                 asiento.append("_id", idAsiento);
                                 asiento.append("tipo", "Predeterminado");
