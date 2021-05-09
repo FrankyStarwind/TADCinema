@@ -8,6 +8,7 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mycompany.components.Navegacion;
 import com.mycompany.model.Compra;
+import com.mycompany.utils.BBDD;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Page;
@@ -61,9 +62,17 @@ public class CompraUI extends UI {
         Label nombreU = new Label("Gracias por la compra " + c.getUsuario());
         Label pelicula = new Label("Ha comprado la sesion de la película "
                 + c.getNomPelicula() + " a las " + c.getHoraSesion() + " en la fila "
-                + c.getFila()+" y asiento "+c.getAsiento()+" a "+c.getPrecio()+"");
+                + c.getFila() + " y asiento " + c.getAsiento() + " a " + c.getPrecio() + "");
+        try {
+            registrarCompra(c);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(CompraUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-        rootLayout.addComponents(btnLogout, navbar, nombreU,pelicula);
+        /**
+         *
+         */
+        rootLayout.addComponents(btnLogout, navbar, nombreU, pelicula);
         //horarios.setSpacing(true);
         //mostrarSesiones(horarios, db, session);
         rootLayout.setMargin(true);
@@ -88,6 +97,24 @@ public class CompraUI extends UI {
             final Label bienvenido = new Label("Bienvenido, " + session.getAttribute("usuario"));
             rootLayout.addComponent(bienvenido);
         }
+    }
+
+    private static void registrarCompra(Compra c) throws UnknownHostException {
+
+        BBDD bbdd = new BBDD("compras");
+
+        DBCollection movies = bbdd.getColeccion();
+
+        BasicDBObject pelicula = new BasicDBObject();
+        pelicula.append("usuario", c.getUsuario());
+        pelicula.append("nombrePelicula", c.getNomPelicula());
+        pelicula.append("fila", c.getFila());
+        pelicula.append("asiento", c.getAsiento());
+        pelicula.append("horaSesion", c.getHoraSesion());
+        pelicula.append("precio", c.getPrecio());
+
+
+        movies.insert(pelicula);
     }
 
     private static void mostrarSesiones(HorizontalLayout layout, DB db, WrappedSession session) {
