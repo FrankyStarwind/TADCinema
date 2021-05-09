@@ -177,7 +177,7 @@ public class PeliculasUI extends UI {
             } else if (Objects.nonNull(titulo.getValue())) {
                 Notification.show("Debes rellenar algún campo más.", Notification.Type.ERROR_MESSAGE);
             } else {
-                Notification.show("Error", "El campo 'Película' es obligatorio.", Notification.Type.ERROR_MESSAGE);
+                Notification.show("El campo 'Título' es obligatorio.", Notification.Type.ERROR_MESSAGE);
             }
         });
 

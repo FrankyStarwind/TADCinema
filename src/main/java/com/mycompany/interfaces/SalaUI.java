@@ -27,6 +27,7 @@ import java.io.File;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.annotation.WebServlet;
@@ -68,6 +69,7 @@ public class SalaUI extends UI {
         final Label nomPeli = new Label(nombreSesion + " - Sala " + salaSesion + " (" + sesHora + ")");
 
         rellenarSala();
+        
 
         final ComboBox comboFilas = new ComboBox("Fila", filas);
         comboFilas.setRequired(true);
@@ -92,11 +94,23 @@ public class SalaUI extends UI {
                 int asiento = (int) comboAsientos.getValue();
                 int fila = (int) comboFilas.getValue();
 
-                if (comprobarDisponibilidad(fila, asiento, salaSesion)) {
+                if (comprobarDisponibilidad(sesHora, salaSesion, fila, asiento)) {
                     String nUser = session.getAttribute("usuario").toString();
                     String nPeli = session.getAttribute("nombrePeli").toString();
-                    String hora = session.getAttribute("hora").toString();
-                    Compra compra = new Compra(nUser, nPeli, fila, asiento, hora);
+                    Compra compra = new Compra(nUser, nPeli, fila, asiento, sesHora, salaSesion);
+
+                    try {
+                        BBDD bbdd = new BBDD("ocupados");
+                        DBCollection ocupados = bbdd.getColeccion();
+                        BasicDBObject registroOcupado = new BasicDBObject();
+                        registroOcupado.append("hora", sesHora);
+                        registroOcupado.append("sala", salaSesion);
+                        registroOcupado.append("fila", fila);
+                        registroOcupado.append("numero", asiento);
+                        ocupados.insert(registroOcupado);
+                    } catch (UnknownHostException ex) {
+                        Logger.getLogger(SalaUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
 
                     session.setAttribute("compra", compra);
                     Page.getCurrent().setLocation("/compraEntrada");
@@ -159,42 +173,36 @@ public class SalaUI extends UI {
 
     /**
      * Método encargado de comprobar si el asiento escogido por el cliente está
-     * ya ocupado o no
+     * ya ocupado o no. Si el registro está en la tabla, el asiento está
+     * ocupado.
      *
      * @param fila fila del asiento
      * @param numero número del asiento
      * @param sala número de la sala
+     * @param hora horario
      * @return TRUE/FALSE
      */
-    private static boolean comprobarDisponibilidad(Integer fila, Integer numero, String sala) {
-        boolean disponible = true;
-
+    private static boolean comprobarDisponibilidad(String hora, String sala, Integer fila, Integer numero) {
         BBDD bbdd = null;
         try {
-            bbdd = new BBDD("asientos");
+            bbdd = new BBDD("ocupados");
         } catch (UnknownHostException ex) {
             Logger.getLogger(SalaUI.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        final DBCollection asientos = bbdd.getColeccion();
-        BasicDBObject asientoSala = new BasicDBObject().append("sala", sala);
-        final DBCursor cursor = asientos.find(asientoSala);
-
-        DBObject asiento = null;
-        while (cursor.hasNext()) {
-            asiento = cursor.next();
-            if (asiento.get("fila").equals(fila) && asiento.get("numero").equals(numero)) {
-                if (asiento.get("disponible").equals("Si")) {
-                    disponible = true;
-                } else {
-                    disponible = false;
-                }
-
-                break;
-            }
+        final DBCollection ocupados = bbdd.getColeccion();
+        BasicDBObject filtro = new BasicDBObject();
+        filtro.append("hora", hora);
+        filtro.append("sala", sala);
+        filtro.append("fila", fila);
+        filtro.append("numero", numero);
+        DBObject ocupado = ocupados.findOne(filtro);
+        
+        if (Objects.nonNull(ocupado)) {
+            return false;
+        } else {
+            return true;
         }
-
-        return disponible;
     }
 
 }

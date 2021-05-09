@@ -6,18 +6,20 @@ public class Compra {
     private int fila;
     private int asiento;
     private String horaSesion;
+    private String sala;
     private double precio;
     
     public Compra(){
         
     }
 
-    public Compra(String usuario,String nomPelicula, int fila, int asiento, String horaSesion) {
+    public Compra(String usuario,String nomPelicula, int fila, int asiento, String horaSesion, String sala) {
         this.usuario=usuario;
         this.nomPelicula = nomPelicula;
         this.fila = fila;
         this.asiento = asiento;
         this.horaSesion = horaSesion;
+        this.sala = sala;
         this.precio = 5.00;
     }
     
@@ -67,6 +69,14 @@ public class Compra {
 
     public void setUsuario(String usuario) {
         this.usuario = usuario;
+    }
+
+    public String getSala() {
+        return sala;
+    }
+
+    public void setSala(String sala) {
+        this.sala = sala;
     }
     
 }

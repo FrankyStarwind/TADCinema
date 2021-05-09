@@ -95,6 +95,7 @@ public class CompraUI extends UI {
         compra.append("fila", c.getFila());
         compra.append("asiento", c.getAsiento());
         compra.append("horaSesion", c.getHoraSesion());
+        compra.append("sala", c.getSala());
         compra.append("precio", c.getPrecio());
 
         compras.insert(compra);

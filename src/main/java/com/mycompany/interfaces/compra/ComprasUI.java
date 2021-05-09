@@ -157,6 +157,7 @@ public class ComprasUI extends UI {
         tabla.addContainerProperty("Fila", Integer.class, null);
         tabla.addContainerProperty("Asiento", Integer.class, null);
         tabla.addContainerProperty("Hora", String.class, null);
+        tabla.addContainerProperty("Sala", String.class, null);
         tabla.addContainerProperty("Precio", Double.class, null);
 
         BBDD bbdd = null;
@@ -178,8 +179,9 @@ public class ComprasUI extends UI {
             Integer fila = Integer.valueOf(compra.get("fila").toString());
             Integer asiento = Integer.valueOf(compra.get("asiento").toString());
             String hora = compra.get("horaSesion").toString();
+            String sala = compra.get("sala").toString();
             Double precio = Double.valueOf(compra.get("precio").toString());
-            tabla.addItem(new Object[]{id.toString(), usuario, pelicula, fila, asiento, hora, precio}, id);
+            tabla.addItem(new Object[]{id.toString(), usuario, pelicula, fila, asiento, hora, sala, precio}, id);
 //            listadoPeliculas.add(pelicula);
         }
 
@@ -207,8 +209,9 @@ public class ComprasUI extends UI {
             Integer fila = Integer.valueOf(compra.get("fila").toString());
             Integer asiento = Integer.valueOf(compra.get("asiento").toString());
             String hora = compra.get("horaSesion").toString();
+            String sala = compra.get("sala").toString();
             Double precio = Double.valueOf(compra.get("precio").toString());
-            tabla.addItem(new Object[]{id.toString(), usuario, pelicula, fila, asiento, hora, precio}, id);
+            tabla.addItem(new Object[]{id.toString(), usuario, pelicula, fila, asiento, hora, sala, precio}, id);
 //            listadoPeliculas.add(pelicula);
         }
     }

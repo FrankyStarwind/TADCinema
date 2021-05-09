@@ -72,9 +72,9 @@ public class AsientosUI extends UI {
         // formulario edición
         final FormLayout form = new FormLayout();
 
-        final ComboBox id = new ComboBox("Identificador", listadoId);
+        final ComboBox id = new ComboBox("Asiento", listadoId);
         id.setRequired(true);
-        id.setInputPrompt("Selecciona el ID");
+        id.setInputPrompt("Selecciona el asiento");
         final ComboBox tipo = new ComboBox("Tipo de asiento", comboTipos());
         tipo.setInputPrompt("Selecciona tipo");
         final ComboBox sala = new ComboBox("Sala", comboSalas());
@@ -154,7 +154,7 @@ public class AsientosUI extends UI {
             } else if (Objects.nonNull(id.getValue())) {
                 Notification.show("Debes rellenar algún campo más.", Notification.Type.ERROR_MESSAGE);
             } else {
-                Notification.show("El campo 'Identificador' es obligatorio.", Notification.Type.ERROR_MESSAGE);
+                Notification.show("El campo 'Asiento' es obligatorio.", Notification.Type.ERROR_MESSAGE);
             }
         });
 
@@ -180,7 +180,7 @@ public class AsientosUI extends UI {
             if (Objects.nonNull(id.getValue())) {
                 addWindow(ventanaConfirmacion);
             } else {
-                Notification.show("Primero debes de seleccionar un identificador de asiento", Notification.Type.ERROR_MESSAGE);
+                Notification.show("Primero debes de seleccionar un asiento", Notification.Type.ERROR_MESSAGE);
             }
         });
 
@@ -243,7 +243,7 @@ public class AsientosUI extends UI {
      */
     private static Table obtenerTabla() {
         final Table tabla = new Table();
-        tabla.addContainerProperty("ID", String.class, null);
+        tabla.addContainerProperty("Asiento", String.class, null);
         tabla.addContainerProperty("Tipo", String.class, null);
         tabla.addContainerProperty("Sala", String.class, null);
         tabla.addContainerProperty("Disponible", String.class, null);
