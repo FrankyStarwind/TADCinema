@@ -99,10 +99,14 @@ public class SesionUI extends UI {
             sesion = cursor.next();
 
             String hora=sesion.get("hora").toString();
+            String sala = sesion.get("sala").toString();
             Button b = new Button(hora);
             b.addClickListener(e -> {
-                //Metemos la hora
+                //Metemos la hora y la sala
+                
                 session.setAttribute("hora", hora);
+                session.setAttribute("sala", sala);
+                
                 Page.getCurrent().setLocation("/sala");
             });
             layout.addComponent(b);

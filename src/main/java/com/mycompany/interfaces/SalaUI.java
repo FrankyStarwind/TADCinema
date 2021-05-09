@@ -60,6 +60,9 @@ public class SalaUI extends UI {
         final VerticalLayout vLayout = new VerticalLayout();
 
         String nombreSesion = session.getAttribute("nombrePeli").toString();
+        String salaSesion = session.getAttribute("sala").toString();
+        
+        
         String sesHora = session.getAttribute("hora").toString();
 
         final Label nomPeli = new Label(nombreSesion + " " + sesHora);

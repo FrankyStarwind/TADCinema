@@ -51,52 +51,59 @@ public class CrearSalaUI extends UI {
         // panel de crear sala
         final Panel panelCreate = new Panel("Crear nueva sala");
         final VerticalLayout layoutCreate = new VerticalLayout();
-        
+
         // formulario crear sala
         final FormLayout formCreate = new FormLayout();
         final ComboBox numero = new ComboBox("Número", comboNumeros());
         numero.setRequired(true);
         numero.setInputPrompt("Selecciona número");
-        final TextField capacidad = new TextField("Capacidad (asientos)");
-        capacidad.setRequired(true);
-        capacidad.setInputPrompt("Máximo de asientos");
+        final TextField filas = new TextField("Filas");
+        filas.setRequired(true);
+        final TextField asientos = new TextField("Asientos");
+        asientos.setRequired(true);
+
         final ComboBox tipoSala = new ComboBox("Tipo de sala", comboTipos());
         tipoSala.setRequired(true);
         tipoSala.setInputPrompt("Selecciona el tipo");
-        
+
         // botón para crear sala
         final Button btnCrear = new Button("Crear sala");
         btnCrear.setStyleName("primary");
-        
-        formCreate.addComponents(numero, capacidad, tipoSala, btnCrear);
+
+        formCreate.addComponents(numero, filas, asientos, tipoSala, btnCrear);
         formCreate.setMargin(true);
-        
+
         layoutCreate.addComponents(new Label("Por favor, rellene todos los campos para añadir una nueva sala."), formCreate);
         layoutCreate.setMargin(true);
         layoutCreate.setSpacing(true);
-        
+
         panelCreate.setContent(layoutCreate);
-        
+
         // crea una película nueva 
         btnCrear.addClickListener(e -> {
-            if(validarCampos(numero, capacidad, tipoSala)) {
+            if (validarCampos(numero, asientos, tipoSala)) {
                 try {
                     final BBDD bbdd = new BBDD("salas");
-                    
+
                     final DBCollection salas = bbdd.getColeccion();
-                    
+
                     final BasicDBObject sala = new BasicDBObject();
                     sala.append("_id", numero.getValue());
-                    sala.append("capacidad", capacidad.getValue());
+                    sala.append("capacidad", calculaCapacidad(
+                            Integer.parseInt(filas.getValue()),
+                            Integer.parseInt(asientos.getValue())
+                        )
+                    );
                     sala.append("tipo", tipoSala.getValue());
-                    
+
                     final DBObject query = new BasicDBObject().append("_id", numero.getValue());
                     final DBObject data = salas.findOne(query);
-                    
+
                     if (data == null) {
                         salas.insert(sala);
-                        resetarCampos(numero, capacidad, tipoSala);
+                        resetarCampos(numero, asientos, tipoSala);
                         Notification.show("Se ha creado la sala correctamente", Notification.Type.TRAY_NOTIFICATION);
+                        Page.getCurrent().setLocation("/salas");
                     } else {
                         Notification.show("La sala ya existe", Notification.Type.ERROR_MESSAGE);
                     }
@@ -114,12 +121,12 @@ public class CrearSalaUI extends UI {
 
         setContent(rootLayout);
     }
-    
+
     @WebServlet(urlPatterns = "/crear-sala/*", name = "CrearSalaUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = CrearSalaUI.class, productionMode = false)
     public static class CrearSalaUIServlet extends VaadinServlet {
     }
-    
+
     /**
      * Método encargado de comprobar si la sesión existe o no Si no existe,
      * redirecciona al login
@@ -132,9 +139,10 @@ public class CrearSalaUI extends UI {
             rootLayout.addComponent(bienvenido);
         }
     }
-    
+
     /**
      * Método encargado de cargar el combo de números de sala
+     *
      * @return Listado de números del 1 al 12
      */
     private static List<String> comboNumeros() {
@@ -144,9 +152,10 @@ public class CrearSalaUI extends UI {
         }
         return numeros;
     }
-    
+
     /**
      * Método encargado de cargar el combo de tipos de sala
+     *
      * @return Listado de tipos de sala
      */
     private static List<String> comboTipos() {
@@ -156,9 +165,10 @@ public class CrearSalaUI extends UI {
         tipos.add("iMax");
         return tipos;
     }
-    
+
     /**
      * Método encargado de validar los campos del formulario
+     *
      * @param numero Número de la sala
      * @param capacidad Capacidad medida en asientos
      * @param tipoSala Tipo de sala
@@ -167,7 +177,7 @@ public class CrearSalaUI extends UI {
     private static boolean validarCampos(ComboBox numero, TextField capacidad, ComboBox tipoSala) {
         boolean validos = true;
         String errores = "";
-        
+
         if (numero.getValue() == null) {
             errores += "El campo 'Número' no puede estar vacío\n";
             validos = false;
@@ -180,16 +190,17 @@ public class CrearSalaUI extends UI {
             errores += "El campo 'Tipo de sala' no puede estar vacío";
             validos = false;
         }
-        
+
         if (!validos) {
             Notification.show("Error", errores, Notification.Type.ERROR_MESSAGE);
         }
-        
+
         return validos;
     }
-    
+
     /**
      * Método encargado de resetear los campos del formulario
+     *
      * @param numero Número de sala
      * @param capacidad Capacidad de la sala
      * @param tipoSala Tipo de sala
@@ -199,5 +210,8 @@ public class CrearSalaUI extends UI {
         capacidad.setValue("");
         tipoSala.setValue(null);
     }
-    
+
+    private int calculaCapacidad(int filas, int asientos) {
+        return filas * asientos;
+    }
 }

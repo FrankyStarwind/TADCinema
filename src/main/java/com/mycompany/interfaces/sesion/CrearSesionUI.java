@@ -98,6 +98,7 @@ public class CrearSesionUI extends UI {
                         sesiones.insert(sesion);
                         resetarCampos(pelicula, sala, hora);
                         Notification.show("Se ha creado la sesión correctamente", Notification.Type.TRAY_NOTIFICATION);
+                        Page.getCurrent().setLocation("/sesiones");
                     } else {
                         Notification.show("La sesión ya existe", Notification.Type.ERROR_MESSAGE);
                     }
