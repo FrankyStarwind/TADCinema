@@ -60,15 +60,6 @@ public class AsientosUI extends UI {
         // panel de navegación
         final Navegacion navbar = new Navegacion();
 
-        // botón crear asiento (redirige a la ui determinada)
-        final HorizontalLayout botoneraCrear = new HorizontalLayout();
-        final Button btnCrear = new Button("Crear asiento");
-        botoneraCrear.addComponent(btnCrear);
-        // al pulsar el botón de crear
-        btnCrear.addClickListener(e -> {
-            Page.getCurrent().setLocation("/crear-asiento");
-        });
-
         // tabla de asientos
         final Table tablaAsientos = obtenerTabla();
 
@@ -218,7 +209,7 @@ public class AsientosUI extends UI {
         });
 
         // ESTRUCTURA DE LA INTERFAZ
-        rootLayout.addComponents(btnLogout, navbar, botoneraCrear, grid);
+        rootLayout.addComponents(btnLogout, navbar, grid);
 
         rootLayout.setMargin(true);
         rootLayout.setSpacing(true);
