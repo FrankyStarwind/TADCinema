@@ -215,6 +215,24 @@ public class PeliculasUI extends UI {
             if (Objects.nonNull(pelicula)) {
                 // Elimino la película
                 peliculas.remove(pelicula);
+                
+                try {
+                    // al eliminar la película, vamos a eliminar también sus sesiones
+                    final BBDD bbdd = new BBDD("sesiones");
+                    final DBCollection sesiones = bbdd.getColeccion();
+                    
+                    final BasicDBObject sesion = new BasicDBObject();
+                    sesion.append("pelicula", pelicula.get("titulo"));
+                    final DBCursor cursor = sesiones.find(sesion);
+                    
+                    DBObject ses = null;
+                    while(cursor.hasNext()) {
+                        ses = cursor.next();
+                        sesiones.remove(ses);
+                    }
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(PeliculasUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
                 // actualizo tabla y elimino ventana
                 actualizarTabla(tablaPelis);
@@ -269,7 +287,7 @@ public class PeliculasUI extends UI {
         tabla.addContainerProperty("Pelicula", String.class, null);
         tabla.addContainerProperty("Idioma", String.class, null);
         tabla.addContainerProperty("Director", String.class, null);
-        tabla.addContainerProperty("Año", Integer.class, null);
+        tabla.addContainerProperty("Año", String.class, null);
         tabla.addContainerProperty("Duración", Integer.class, null);
 
         BBDD bbdd = null;
@@ -288,7 +306,7 @@ public class PeliculasUI extends UI {
             String titulo = pelicula.get("titulo").toString();
             String idioma = pelicula.get("idioma").toString();
             String director = pelicula.get("director").toString();
-            Integer anyo = Integer.valueOf(pelicula.get("año").toString());
+            String anyo = pelicula.get("año").toString();
 
             Integer duracion = Integer.valueOf(pelicula.get("duracion").toString());
             tabla.addItem(new Object[]{titulo, idioma, director, anyo, duracion}, titulo);
@@ -319,7 +337,7 @@ public class PeliculasUI extends UI {
             String titulo = pelicula.get("titulo").toString();
             String idioma = pelicula.get("idioma").toString();
             String director = pelicula.get("director").toString();
-            Integer anyo = Integer.valueOf(pelicula.get("año").toString());
+            String anyo = pelicula.get("año").toString();
             Integer duracion = Integer.valueOf(pelicula.get("duracion").toString());
             tabla.addItem(new Object[]{titulo, idioma, director, anyo, duracion}, titulo);
             listadoPeliculas.add(titulo);
