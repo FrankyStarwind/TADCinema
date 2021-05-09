@@ -1,5 +1,6 @@
 package com.mycompany.interfaces;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -18,6 +19,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -61,13 +63,9 @@ public class SalaUI extends UI {
 
         String nombreSesion = session.getAttribute("nombrePeli").toString();
         String salaSesion = session.getAttribute("sala").toString();
-        
-        
         String sesHora = session.getAttribute("hora").toString();
 
-        final Label nomPeli = new Label(nombreSesion + " " + sesHora);
-
-        nomPeli.setCaption(nombreSesion);
+        final Label nomPeli = new Label(nombreSesion + " - Sala " + salaSesion + " (" + sesHora + ")");
 
         rellenarSala();
 
@@ -90,18 +88,21 @@ public class SalaUI extends UI {
         contenido.setContent(vLayout);
 
         btnComprar.addClickListener(e -> {
-            if (comboAsientos.getValue() != null
-                    && comboFilas.getValue() != null) {
-                
-                int asiento=(int)comboAsientos.getValue();
-                int fila=(int)comboFilas.getValue();
-                String nUser = session.getAttribute("usuario").toString();
-                String nPeli = session.getAttribute("nombrePeli").toString();
-                String hora = session.getAttribute("hora").toString();
-                Compra compra = new Compra(nUser,nPeli,fila,asiento,hora);
-                
-                session.setAttribute("compra", compra);
-                Page.getCurrent().setLocation("/compraEntrada");
+            if (comboAsientos.getValue() != null && comboFilas.getValue() != null) {
+                int asiento = (int) comboAsientos.getValue();
+                int fila = (int) comboFilas.getValue();
+
+                if (comprobarDisponibilidad(fila, asiento, salaSesion)) {
+                    String nUser = session.getAttribute("usuario").toString();
+                    String nPeli = session.getAttribute("nombrePeli").toString();
+                    String hora = session.getAttribute("hora").toString();
+                    Compra compra = new Compra(nUser, nPeli, fila, asiento, hora);
+
+                    session.setAttribute("compra", compra);
+                    Page.getCurrent().setLocation("/compraEntrada");
+                } else {
+                    Notification.show("El asiento ya está ocupado. Por favor, seleccione otro diferente.", Notification.Type.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -154,6 +155,46 @@ public class SalaUI extends UI {
         } catch (UnknownHostException ex) {
             Logger.getLogger(SalaUI.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    /**
+     * Método encargado de comprobar si el asiento escogido por el cliente está
+     * ya ocupado o no
+     *
+     * @param fila fila del asiento
+     * @param numero número del asiento
+     * @param sala número de la sala
+     * @return TRUE/FALSE
+     */
+    private static boolean comprobarDisponibilidad(Integer fila, Integer numero, String sala) {
+        boolean disponible = true;
+
+        BBDD bbdd = null;
+        try {
+            bbdd = new BBDD("asientos");
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(SalaUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        final DBCollection asientos = bbdd.getColeccion();
+        BasicDBObject asientoSala = new BasicDBObject().append("sala", sala);
+        final DBCursor cursor = asientos.find(asientoSala);
+
+        DBObject asiento = null;
+        while (cursor.hasNext()) {
+            asiento = cursor.next();
+            if (asiento.get("fila").equals(fila) && asiento.get("numero").equals(numero)) {
+                if (asiento.get("disponible").equals("Si")) {
+                    disponible = true;
+                } else {
+                    disponible = false;
+                }
+
+                break;
+            }
+        }
+
+        return disponible;
     }
 
 }

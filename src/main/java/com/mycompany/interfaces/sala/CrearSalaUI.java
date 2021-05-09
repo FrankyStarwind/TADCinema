@@ -80,21 +80,21 @@ public class CrearSalaUI extends UI {
 
         panelCreate.setContent(layoutCreate);
 
-        // crea una película nueva 
+        // crea una sala nueva
+        // genera también los asientos de dicha sala
         btnCrear.addClickListener(e -> {
             if (validarCampos(numero, filas, asientos, tipoSala)) {
                 try {
-                    final BBDD bbdd = new BBDD("salas");
+                    BBDD bbdd = new BBDD("salas");
 
                     final DBCollection salas = bbdd.getColeccion();
+                    
+                    Integer numFilas = Integer.parseInt(filas.getValue());
+                    Integer numAsientos = Integer.parseInt(asientos.getValue());
 
                     final BasicDBObject sala = new BasicDBObject();
                     sala.append("_id", numero.getValue());
-                    sala.append("capacidad", calculaCapacidad(
-                            Integer.parseInt(filas.getValue()),
-                            Integer.parseInt(asientos.getValue())
-                        )
-                    );
+                    sala.append("capacidad", calculaCapacidad(numFilas, numAsientos));
                     sala.append("tipo", tipoSala.getValue());
 
                     final DBObject query = new BasicDBObject().append("_id", numero.getValue());
@@ -102,6 +102,29 @@ public class CrearSalaUI extends UI {
 
                     if (data == null) {
                         salas.insert(sala);
+                        
+                        // genera automáticamente los asientos de dicha sala
+                        bbdd = new BBDD("asientos");
+                        final DBCollection tablaAsientos = bbdd.getColeccion();
+                        
+                        String idAsiento = "";
+                        BasicDBObject asiento = new BasicDBObject();
+                        
+                        for (int fila = 1; fila <= numFilas; fila++) {
+                            for (int col = 1; col <= numAsientos; col++) {
+                                idAsiento = fila + "-" + col;
+                                
+                                asiento.append("_id", idAsiento);
+                                asiento.append("tipo", "Predeterminado");
+                                asiento.append("fila", fila);
+                                asiento.append("numero", col);
+                                asiento.append("sala", sala.get("_id"));
+                                asiento.append("disponible", "Si");
+                                
+                                tablaAsientos.insert(asiento);
+                            }
+                        }
+                        
                         resetarCampos(numero, filas, asientos, tipoSala);
                         Notification.show("Se ha creado la sala correctamente", Notification.Type.TRAY_NOTIFICATION);
                         Page.getCurrent().setLocation("/salas");

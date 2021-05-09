@@ -116,7 +116,7 @@ public class AsientosUI extends UI {
                     if (asiento.get("_id").equals(event.getItemId())) {
                         id.setValue(asiento.get("_id"));
                         tipo.setValue(asiento.get("tipo"));
-                        sala.setValue(Integer.valueOf(asiento.get("sala").toString()));
+                        sala.setValue(asiento.get("sala"));
                         disponible.setValue(asiento.get("disponible").toString());
                         break;
                     }
@@ -245,7 +245,7 @@ public class AsientosUI extends UI {
         final Table tabla = new Table();
         tabla.addContainerProperty("ID", String.class, null);
         tabla.addContainerProperty("Tipo", String.class, null);
-        tabla.addContainerProperty("Sala", Integer.class, null);
+        tabla.addContainerProperty("Sala", String.class, null);
         tabla.addContainerProperty("Disponible", String.class, null);
         
         BBDD bbdd = null;
@@ -263,7 +263,7 @@ public class AsientosUI extends UI {
             asiento = cursor.next();
             String id = asiento.get("_id").toString();
             String tipo = asiento.get("tipo").toString();
-            Integer sala = Integer.valueOf(asiento.get("sala").toString());
+            String sala = asiento.get("sala").toString();
             String disponible = asiento.get("disponible").toString();
             tabla.addItem(new Object[]{id, tipo, sala, disponible.equals("Si") ? "Si" : "No"}, id);
             listadoId.add(id);
@@ -292,7 +292,7 @@ public class AsientosUI extends UI {
             asiento = cursor.next();
             String id = asiento.get("_id").toString();
             String tipo = asiento.get("tipo").toString();
-            Integer sala = Integer.valueOf(asiento.get("sala").toString());
+            String sala = asiento.get("sala").toString();
             String disponible = asiento.get("disponible").toString();
             tabla.addItem(new Object[]{id, tipo, sala, disponible.equals("Si") ? "Si" : "No"}, id);
             listadoId.add(id);
@@ -321,8 +321,8 @@ public class AsientosUI extends UI {
      *
      * @return Listado de salas en bbdd
      */
-    private static List<Integer> comboSalas() {
-        final List<Integer> salas = new ArrayList<>();
+    private static List<String> comboSalas() {
+        final List<String> salas = new ArrayList<>();
         BBDD bbdd = null;
         try {
             bbdd = new BBDD("salas");
@@ -336,12 +336,12 @@ public class AsientosUI extends UI {
         DBObject sala = null;
         while (cursor.hasNext()) {
             sala = cursor.next();
-            salas.add(Integer.valueOf(sala.get("_id").toString()));
+            salas.add(sala.get("_id").toString());
         }
         
-        salas.sort(new Comparator<Integer>() {
+        salas.sort(new Comparator<String>() {
             @Override
-            public int compare(Integer o1, Integer o2) {
+            public int compare(String o1, String o2) {
                 return o1.compareTo(o2);
             }
         });
