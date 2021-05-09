@@ -84,8 +84,8 @@ public class SalasUI extends UI {
         final ComboBox numero = new ComboBox("Número de sala", listadoId);
         numero.setRequired(true);
         numero.setInputPrompt("Selecciona la sala");
-        final TextField capacidad = new TextField("Fila asiento");
-        capacidad.setInputPrompt("Introduce la fila");
+        final TextField capacidad = new TextField("Capacidad");
+        capacidad.setInputPrompt("Introduce la capacidad");
         final ComboBox tipo = new ComboBox("Tipo de sala", comboTipos());
         tipo.setInputPrompt("Selecciona tipo");
         final Button btnEditar = new Button("Modificar");

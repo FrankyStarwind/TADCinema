@@ -62,6 +62,9 @@ public class Navegacion extends CustomComponent {
             btnSesiones.addClickListener(e -> {
                 Page.getCurrent().setLocation("/sesiones");
             });
+            btnCompras.addClickListener(e -> {
+                Page.getCurrent().setLocation("/compras");
+            });
         }
         
         hLayout.setMargin(true);

@@ -5,7 +5,6 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
 import com.mycompany.components.Navegacion;
 import com.mycompany.model.Compra;
 import com.mycompany.utils.BBDD;
@@ -26,12 +25,10 @@ import java.util.logging.Logger;
 import javax.servlet.annotation.WebServlet;
 
 @Theme("mytheme")
-
 public class CompraUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-
         final WrappedSession session = getSession().getSession();
         final VerticalLayout rootLayout = new VerticalLayout();
         final Button btnLogout = new Button("Cerrar sesión");
@@ -49,14 +46,6 @@ public class CompraUI extends UI {
         // panel de navegación
         final Navegacion navbar = new Navegacion();
 
-        MongoClient mongoClient = null;
-        try {
-            mongoClient = new MongoClient("localhost", 27017);
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(CompraUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        DB db = mongoClient.getDB("TADCinemaDB");
-
         Compra c = (Compra) session.getAttribute("compra");
 
         Label nombreU = new Label("Gracias por la compra " + c.getUsuario());
@@ -68,10 +57,7 @@ public class CompraUI extends UI {
         } catch (UnknownHostException ex) {
             Logger.getLogger(CompraUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        /**
-         *
-         */
+        
         rootLayout.addComponents(btnLogout, navbar, nombreU, pelicula);
         //horarios.setSpacing(true);
         //mostrarSesiones(horarios, db, session);
@@ -81,9 +67,9 @@ public class CompraUI extends UI {
         setContent(rootLayout);
     }
 
-    @WebServlet(urlPatterns = "/compraEntrada/*", name = "CompraEntradaUIServlet", asyncSupported = true)
+    @WebServlet(urlPatterns = "/compraEntrada/*", name = "CompraUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = CompraUI.class, productionMode = false)
-    public static class CarteleraUIServlet extends VaadinServlet {
+    public static class CompraUIServlet extends VaadinServlet {
     }
 
     /**
@@ -100,25 +86,21 @@ public class CompraUI extends UI {
     }
 
     private static void registrarCompra(Compra c) throws UnknownHostException {
-
         BBDD bbdd = new BBDD("compras");
+        DBCollection compras = bbdd.getColeccion();
 
-        DBCollection movies = bbdd.getColeccion();
+        BasicDBObject compra = new BasicDBObject();
+        compra.append("usuario", c.getUsuario());
+        compra.append("nombrePelicula", c.getNomPelicula());
+        compra.append("fila", c.getFila());
+        compra.append("asiento", c.getAsiento());
+        compra.append("horaSesion", c.getHoraSesion());
+        compra.append("precio", c.getPrecio());
 
-        BasicDBObject pelicula = new BasicDBObject();
-        pelicula.append("usuario", c.getUsuario());
-        pelicula.append("nombrePelicula", c.getNomPelicula());
-        pelicula.append("fila", c.getFila());
-        pelicula.append("asiento", c.getAsiento());
-        pelicula.append("horaSesion", c.getHoraSesion());
-        pelicula.append("precio", c.getPrecio());
-
-
-        movies.insert(pelicula);
+        compras.insert(compra);
     }
 
     private static void mostrarSesiones(HorizontalLayout layout, DB db, WrappedSession session) {
-
         // obtengo la colección de los usuarios
         DBCollection sesiones = db.getCollection("sessions");
 
@@ -144,7 +126,6 @@ public class CompraUI extends UI {
             });
             layout.addComponent(b);
         }
-
     }
 
 }
