@@ -199,6 +199,8 @@ public class SalasUI extends UI {
                 // actualizo tabla y elimino ventana
                 actualizarTabla(tablaSalas);
                 removeWindow(ventanaConfirmacion);
+                // reseteo de campos
+                resetarCampos(numero, capacidad, tipo);
 
                 Notification.show("El registro se ha eliminado correctamente", Notification.Type.TRAY_NOTIFICATION);
             }
