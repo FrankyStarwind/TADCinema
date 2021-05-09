@@ -5,6 +5,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mycompany.components.Navegacion;
+import com.mycompany.interfaces.pelicula.PeliculasUI;
 import com.mycompany.utils.BBDD;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -195,6 +196,24 @@ public class SalasUI extends UI {
             if (Objects.nonNull(sala)) {
                 // Elimino la sala
                 salas.remove(sala);
+                
+                try {
+                    // al eliminar la sala, vamos a eliminar también sus asientos
+                    final BBDD bbdd = new BBDD("asientos");
+                    final DBCollection asientos = bbdd.getColeccion();
+                    
+                    final BasicDBObject asiento = new BasicDBObject();
+                    asiento.append("sala", sala.get("_id"));
+                    final DBCursor cursor = asientos.find(asiento);
+                    
+                    DBObject a = null;
+                    while(cursor.hasNext()) {
+                        a = cursor.next();
+                        asientos.remove(a);
+                    }
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(PeliculasUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
                 // actualizo tabla y elimino ventana
                 actualizarTabla(tablaSalas);
