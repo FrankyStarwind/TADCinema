@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+    mongo:
+        image: mongo
+        container_name: mongodb
+        restart: always
+        ports:
+            - 3306:3306
+        network_mode: host
+        volumes:
+            # Montamos un volumen para MongoDB para no perder los datos de la bd
+            - $HOME/mongo:/data/db
+
+    tadcinema:
+        image: maven:4.0.0-jdk-8
+        volumes:
+            - ./TADCinema/:/var/www/html
+        ports:
+            - 8080:8080
+        # Substitute the following with whatever
+        # makes sense for your java webapp
+        command: mvn jetty:run
