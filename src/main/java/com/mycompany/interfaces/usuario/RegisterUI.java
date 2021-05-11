@@ -1,11 +1,10 @@
 package com.mycompany.interfaces.usuario;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
+import com.mycompany.utils.BBDD;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Page;
@@ -86,13 +85,11 @@ public class RegisterUI extends UI {
             if (camposValidos(name, surname, dni, password)) {
                 try {
                     // creación del cliente de mongo
-                    MongoClient mongoClient = new MongoClient("localhost", 27017);
-
-                    DB db = mongoClient.getDB("TADCinemaDB"); // obtención de la base de datos
+                    BBDD bbdd = new BBDD("usuarios");
                     System.out.println("Conectado a la base de datos");
 
                     // si no existe, se crea
-                    if (!existeUsuario("_id", dni, db) && !existeUsuario("username", username, db)) {
+                    if (!existeUsuario("_id", dni, bbdd.getColeccion()) && !existeUsuario("username", username, bbdd.getColeccion())) {
                         // creación del documento usuario
                         BasicDBObject usuario = new BasicDBObject();
                         usuario.append("nombre", name.getValue());
@@ -104,7 +101,7 @@ public class RegisterUI extends UI {
                         usuario.append("rol", "cliente");
 
                         // Obtengo la colección de los usuarios
-                        DBCollection usuarios = db.getCollection("usuarios");
+                        DBCollection usuarios = bbdd.getColeccion();
                         usuarios.insert(usuario);
 
                         // resetea valores
@@ -113,7 +110,7 @@ public class RegisterUI extends UI {
                         // mensaje de éxito
                         verticalLayout.addComponent(new Label("<p style=\"color: green; "
                                 + "font-weight: bold;\">Registro de usuario realizado correctamente.</p>", ContentMode.HTML));
-                    } else if (existeUsuario("_id", dni, db)) {
+                    } else if (existeUsuario("_id", dni, bbdd.getColeccion())) {
                         // mensaje de error
                         verticalLayout.addComponent(new Label("<p style=\"color: red; "
                                 + "font-weight: bold;\">El dni ya existe en base de datos.</p>", ContentMode.HTML));
@@ -210,17 +207,14 @@ public class RegisterUI extends UI {
      *
      * @param nombreCampo tipo de campo
      * @param campo campo introducido en el formulario
-     * @param db base de datos
+     * @param usuarios tabla de usuarios
      * @return TRUE/FALSE
      */
-    public static boolean existeUsuario(String nombreCampo, TextField campo, DB db) {
+    public static boolean existeUsuario(String nombreCampo, TextField campo, DBCollection usuarios) {
         boolean existe = false;
 
-        // obtengo la colección de los usuarios
-        DBCollection equipos = db.getCollection("usuarios");
-
         // cursor para iterar la lista de usuarios
-        final DBCursor cursor = equipos.find();
+        final DBCursor cursor = usuarios.find();
 
         DBObject usuario;
 

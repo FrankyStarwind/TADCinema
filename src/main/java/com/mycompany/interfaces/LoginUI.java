@@ -6,6 +6,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mycompany.utils.BBDD;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
@@ -64,15 +65,10 @@ public class LoginUI extends UI {
         // iniciar sesión en el sistema
         btnLogin.addClickListener(e -> {
             if (camposValidos(username, password)) {
-
-                MongoClient mongoClient;
                 try {
-                    mongoClient = new MongoClient("localhost", 27017);
-                    DB db = mongoClient.getDB("TADCinemaDB");
-                    // obtengo la colección de los usuarios
+                    BBDD db = new BBDD("usuarios");
                     
-                    
-                    if (existeUsuario(username, password, db, session)) {
+                    if (existeUsuario(username, password, db.getColeccion(), session)) {
                         session.setAttribute("usuario", username.getValue());
 
                         Page.getCurrent().setLocation("/home");
@@ -113,17 +109,14 @@ public class LoginUI extends UI {
      *
      * @param username nombre de usuario
      * @param password contraseña
-     * @param db base de datos
+     * @param usuarios tabla de usuarios
      * @param session
      * @return TRUE/FALSE
      */
 //    WrappedSession session = getSession().getSession();
     public static boolean existeUsuario(TextField username, PasswordField password,
-            DB db, WrappedSession session) {
+            DBCollection usuarios, WrappedSession session) {
         boolean existe = false;
-
-        // obtengo la colección de los usuarios
-        DBCollection usuarios = db.getCollection("usuarios");
 
         // cursor para iterar la lista de usuarios
         final DBCursor cursor = usuarios.find();
