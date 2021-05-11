@@ -33,7 +33,6 @@ public class CompraUI extends UI {
         final VerticalLayout rootLayout = new VerticalLayout();
         final Button btnLogout = new Button("Cerrar sesión");
 
-        //final HorizontalLayout horarios = new HorizontalLayout();
         // comprueba si se ha iniciado sesión
         comprobarSesion(rootLayout, session);
 
@@ -59,8 +58,7 @@ public class CompraUI extends UI {
         }
         
         rootLayout.addComponents(btnLogout, navbar, nombreU, pelicula);
-        //horarios.setSpacing(true);
-        //mostrarSesiones(horarios, db, session);
+       
         rootLayout.setMargin(true);
         rootLayout.setSpacing(true);
 
@@ -111,7 +109,7 @@ public class CompraUI extends UI {
         BasicDBObject whereQuery = new BasicDBObject();
         whereQuery.put("movie", nomSesion);
 
-        DBCursor cursor = sesiones.find(whereQuery);
+        DBCursor cursor = sesiones.find(whereQuery); 
 
         DBObject sesion;
         // recorre la lista y si lo encuentra, sale del bucle

@@ -294,8 +294,7 @@ public class ComprasUI extends UI {
             String hora = compra.get("horaSesion").toString();
             String sala = compra.get("sala").toString();
             Double precio = Double.valueOf(compra.get("precio").toString());
-            tabla.addItem(new Object[]{id.toString(), usuario, pelicula, fila, asiento, hora, sala, precio}, id);
-//            listadoPeliculas.add(pelicula);
+            tabla.addItem(new Object[]{id.toString(), usuario, pelicula, fila, asiento, hora, sala, precio}, id); 
         }
     }
 

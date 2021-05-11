@@ -68,12 +68,10 @@ public class HomeUI extends UI {
             Component c = layout.getComponent(i);
             if(c instanceof Panel){
                 ((Panel) c).addClickListener(e->{
-//                    
-//                    Notification.show("Accediendo a la sesion",
-//                            c.getCaption(), Notification.Type.HUMANIZED_MESSAGE);
+
                     session.setAttribute("nombrePeli",c.getCaption());
                     Page.getCurrent().setLocation("/sessionMovie");
-                    //System.out.println(session.getAttribute("nombrePeli"));
+                  
                 }
                 );
             }
@@ -126,15 +124,8 @@ public class HomeUI extends UI {
             final Label director = new Label("<strong>Director:</strong> " + movie.get("director"), ContentMode.HTML);
             Double time = Double.parseDouble(movie.get("duracion").toString());
             final Label duracion = new Label("<strong>Duración:</strong> " + time.intValue() + " minutos", ContentMode.HTML);
-//            final Button b = new Button("Acceder");
-//            
-//            b.addClickListener(e->{
-//                Notification.show(DESIGN_ATTR_PLAIN_TEXT, DESIGN_ATTR_PLAIN_TEXT, Notification.Type.ERROR_MESSAGE);
-//            });
-            layoutInner.addComponents(titulo, idioma, year, director, duracion
-//                    ,
-//                    b
-            );
+
+            layoutInner.addComponents(titulo, idioma, year, director, duracion);
             
             layoutInner.setMargin(true);
             layoutInner.setSpacing(true);

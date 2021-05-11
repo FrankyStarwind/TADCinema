@@ -170,7 +170,7 @@ public class LoginUI extends UI {
             }
             Notification notification = new Notification("Error", salidaError, Notification.Type.ERROR_MESSAGE);
             notification.show(Page.getCurrent());
-        }
+        } 
 
         return esCorrecto;
     }

@@ -171,10 +171,11 @@ public class SalaUI extends UI {
         }
     }
 
+    
     /**
      * Método encargado de comprobar si el asiento escogido por el cliente está
      * ya ocupado o no. Si el registro está en la tabla, el asiento está
-     * ocupado.
+     * ocupado. 
      *
      * @param fila fila del asiento
      * @param numero número del asiento

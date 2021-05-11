@@ -93,6 +93,7 @@ public class SalasUI extends UI {
         btnEditar.setStyleName("primary");
         final Button btnEliminar = new Button("Eliminar");
         btnEliminar.setStyleName("danger");
+        
 
         final HorizontalLayout hLayout = new HorizontalLayout();
         hLayout.addComponents(btnEditar, btnEliminar);
